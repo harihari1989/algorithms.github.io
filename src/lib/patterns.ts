@@ -1296,7 +1296,7 @@ export const patterns: PatternDefinition<any>[] = [
         ['A', 'C'],
         ['B', 'D'],
         ['C', 'D'],
-      ].filter(() => rng() > 0.3);
+      ].filter(() => rng() > 0.3) as [string, string][];
       return { nodes, edges };
     },
     makeSteps: makeTopoSteps,

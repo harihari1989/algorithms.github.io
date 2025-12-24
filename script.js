@@ -875,7 +875,37 @@ const patterns = [
   },
 ];
 
-const patternSimulations = {
+const baseTraversalGraph = {
+  nodes: ["A", "B", "C", "D", "E", "F", "G"],
+  edges: {
+    A: ["B", "C"],
+    B: ["D", "E"],
+    C: ["F"],
+    D: ["G"],
+    E: ["G"],
+    F: ["G"],
+    G: [],
+  },
+  start: "A",
+};
+
+const bfsSimulation = {
+  title: "BFS traversal",
+  description: "Visit nodes level by level using a queue.",
+  type: "graph-traversal",
+  mode: "bfs",
+  ...baseTraversalGraph,
+};
+
+const dfsSimulation = {
+  title: "DFS traversal",
+  description: "Go deep before backtracking with a stack.",
+  type: "graph-traversal",
+  mode: "dfs",
+  ...baseTraversalGraph,
+};
+
+const simulationConfigs = {
   "sliding-window": {
     title: "Max sum window",
     description: "Find the max sum of any 3 consecutive elements.",
@@ -903,6 +933,56 @@ const patternSimulations = {
     type: "cyclic-sort",
     array: [3, 1, 5, 4, 2],
   },
+  "merge-sort": {
+    title: "Merge sort",
+    description: "Split, then merge sorted halves.",
+    type: "merge-sort",
+    array: [7, 2, 5, 3, 1, 6, 4],
+  },
+  "quick-sort": {
+    title: "Quick sort",
+    description: "Partition around a pivot and recurse.",
+    type: "quick-sort",
+    array: [7, 2, 5, 3, 1, 6, 4],
+  },
+  "bfs-pattern": bfsSimulation,
+  "dfs-pattern": dfsSimulation,
+  "topological-sort": {
+    title: "Topological order",
+    description: "Peel off zero in-degree nodes to form a valid ordering.",
+    type: "topological-sort",
+    nodes: ["A", "B", "C", "D", "E", "F"],
+    edges: [
+      ["A", "D"],
+      ["A", "E"],
+      ["B", "E"],
+      ["C", "F"],
+      ["D", "F"],
+      ["E", "F"],
+    ],
+  },
+  "two-heaps": {
+    title: "Streaming median",
+    description: "Balance two heaps as numbers arrive.",
+    type: "two-heaps",
+    stream: [5, 2, 10, 3, 8, 1],
+  },
+  "linear-search": {
+    title: "Linear scan",
+    description: "Check each value until the target is found.",
+    type: "linear-search",
+    array: [4, 1, 7, 3, 9, 2],
+    target: 9,
+  },
+  "binary-search": {
+    title: "Binary search",
+    description: "Halve the search range until the target is found.",
+    type: "binary-search",
+    array: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    target: 6,
+  },
+  bfs: bfsSimulation,
+  dfs: dfsSimulation,
 };
 
 const escapeHtml = (value) =>
@@ -949,17 +1029,9 @@ const renderExamples = (examples) => `
 `;
 
 const renderSimulationPanel = (item) => {
-  const config = patternSimulations[item.slug];
+  const config = simulationConfigs[item.slug];
   if (!config) {
-    return `
-      <section class="simulator simulator--empty">
-        <div class="simulator-header">
-          <p class="eyebrow">Simulation</p>
-          <h4>Interactive walkthrough</h4>
-        </div>
-        <p class="simulator-subtitle">Interactive visualization is not available for this pattern yet.</p>
-      </section>
-    `;
+    return "";
   }
 
   return `
@@ -1023,6 +1095,7 @@ const renderFoundationDetail = (item) => {
   const sectionsHtml = item.sections.map((section) => renderSectionBlock(section.title, section.items)).join("");
   const codeHtml = item.pythonCode ? renderCodeBlock(item.pythonCode) : "";
   const examplesHtml = item.exampleProblems?.length ? renderExamples(item.exampleProblems) : "";
+  const simulationHtml = item.kind === "algorithm" ? renderSimulationPanel(item) : "";
 
   return `
     <div class="side-panel-header">
@@ -1030,6 +1103,7 @@ const renderFoundationDetail = (item) => {
       <h3>${escapeHtml(item.title)}</h3>
       <p class="side-panel-summary">${escapeHtml(item.summary)}</p>
     </div>
+    ${simulationHtml}
     <div class="side-panel-body">
       <p>${escapeHtml(item.description)}</p>
       ${sectionsHtml}
@@ -1220,6 +1294,248 @@ const buildCyclicSortSteps = (config) => {
   return steps;
 };
 
+const buildMergeSortSteps = (config) => {
+  const steps = [];
+  const values = [...config.array];
+  const aux = [...values];
+
+  const merge = (start, mid, end) => {
+    let left = start;
+    let right = mid;
+    let index = start;
+
+    while (left < mid && right < end) {
+      if (values[left] <= values[right]) {
+        aux[index] = values[left];
+        left += 1;
+      } else {
+        aux[index] = values[right];
+        right += 1;
+      }
+      index += 1;
+    }
+
+    while (left < mid) {
+      aux[index] = values[left];
+      left += 1;
+      index += 1;
+    }
+
+    while (right < end) {
+      aux[index] = values[right];
+      right += 1;
+      index += 1;
+    }
+
+    for (let i = start; i < end; i += 1) {
+      values[i] = aux[i];
+    }
+
+    steps.push({
+      array: [...values],
+      start,
+      end: end - 1,
+      mid,
+      action: "merge",
+    });
+  };
+
+  const sort = (start, end) => {
+    if (end - start <= 1) {
+      return;
+    }
+    const mid = Math.floor((start + end) / 2);
+    sort(start, mid);
+    sort(mid, end);
+    merge(start, mid, end);
+  };
+
+  sort(0, values.length);
+  return steps;
+};
+
+const buildQuickSortSteps = (config) => {
+  const steps = [];
+  const values = [...config.array];
+
+  const partition = (start, end) => {
+    const pivotValue = values[end];
+    let i = start;
+
+    for (let j = start; j < end; j += 1) {
+      if (values[j] <= pivotValue) {
+        const temp = values[i];
+        values[i] = values[j];
+        values[j] = temp;
+        i += 1;
+      }
+    }
+
+    const temp = values[i];
+    values[i] = values[end];
+    values[end] = temp;
+
+    steps.push({
+      array: [...values],
+      start,
+      end,
+      pivot: i,
+      pivotValue,
+      action: "partition",
+    });
+
+    return i;
+  };
+
+  const sort = (start, end) => {
+    if (start >= end) {
+      return;
+    }
+    const pivotIndex = partition(start, end);
+    sort(start, pivotIndex - 1);
+    sort(pivotIndex + 1, end);
+  };
+
+  sort(0, values.length - 1);
+  return steps;
+};
+
+const buildLinearSearchSteps = (config) => {
+  const values = config.array;
+  const target = config.target;
+  const steps = [];
+
+  for (let index = 0; index < values.length; index += 1) {
+    const value = values[index];
+    const found = value === target;
+    steps.push({ index, value, target, found });
+    if (found) {
+      break;
+    }
+  }
+
+  return steps;
+};
+
+const buildGraphTraversalSteps = (config) => {
+  const steps = [];
+  const visited = new Set();
+  const frontier = [config.start];
+  const order = [];
+
+  while (frontier.length > 0) {
+    const current = config.mode === "bfs" ? frontier.shift() : frontier.pop();
+    if (!current || visited.has(current)) {
+      continue;
+    }
+    visited.add(current);
+    order.push(current);
+    const neighbors = config.edges[current] || [];
+    const nextNodes = neighbors.filter((node) => !visited.has(node));
+
+    if (config.mode === "bfs") {
+      frontier.push(...nextNodes);
+    } else {
+      frontier.push(...nextNodes.slice().reverse());
+    }
+
+    steps.push({
+      current,
+      visited: Array.from(visited),
+      frontier: [...frontier],
+      order: [...order],
+    });
+  }
+
+  return steps;
+};
+
+const buildTopologicalSortSteps = (config) => {
+  const steps = [];
+  const nodes = config.nodes;
+  const edges = config.edges;
+  const inDegree = {};
+  const adjacency = {};
+
+  nodes.forEach((node) => {
+    inDegree[node] = 0;
+    adjacency[node] = [];
+  });
+
+  edges.forEach(([from, to]) => {
+    adjacency[from].push(to);
+    inDegree[to] += 1;
+  });
+
+  const queue = nodes.filter((node) => inDegree[node] === 0);
+  const order = [];
+
+  while (queue.length > 0) {
+    const current = queue.shift();
+    order.push(current);
+
+    adjacency[current].forEach((neighbor) => {
+      inDegree[neighbor] -= 1;
+      if (inDegree[neighbor] === 0) {
+        queue.push(neighbor);
+      }
+    });
+
+    steps.push({
+      current,
+      queue: [...queue],
+      order: [...order],
+      inDegree: { ...inDegree },
+    });
+  }
+
+  return steps;
+};
+
+const buildTwoHeapsSteps = (config) => {
+  const steps = [];
+  const left = [];
+  const right = [];
+
+  const maxOf = (arr) => (arr.length ? Math.max(...arr) : null);
+  const minOf = (arr) => (arr.length ? Math.min(...arr) : null);
+
+  config.stream.forEach((value) => {
+    const leftMax = maxOf(left);
+    if (leftMax === null || value <= leftMax) {
+      left.push(value);
+    } else {
+      right.push(value);
+    }
+
+    if (left.length > right.length + 1) {
+      const move = maxOf(left);
+      left.splice(left.indexOf(move), 1);
+      right.push(move);
+    } else if (right.length > left.length) {
+      const move = minOf(right);
+      right.splice(right.indexOf(move), 1);
+      left.push(move);
+    }
+
+    const leftSorted = [...left].sort((a, b) => b - a);
+    const rightSorted = [...right].sort((a, b) => a - b);
+    const median =
+      leftSorted.length === rightSorted.length
+        ? (leftSorted[0] + rightSorted[0]) / 2
+        : leftSorted[0];
+
+    steps.push({
+      value,
+      left: leftSorted,
+      right: rightSorted,
+      median,
+    });
+  });
+
+  return steps;
+};
+
 const buildSimulationSteps = (config) => {
   switch (config.type) {
     case "sliding-window":
@@ -1230,6 +1546,18 @@ const buildSimulationSteps = (config) => {
       return buildBinarySearchSteps(config);
     case "cyclic-sort":
       return buildCyclicSortSteps(config);
+    case "merge-sort":
+      return buildMergeSortSteps(config);
+    case "quick-sort":
+      return buildQuickSortSteps(config);
+    case "linear-search":
+      return buildLinearSearchSteps(config);
+    case "graph-traversal":
+      return buildGraphTraversalSteps(config);
+    case "topological-sort":
+      return buildTopologicalSortSteps(config);
+    case "two-heaps":
+      return buildTwoHeapsSteps(config);
     default:
       return [];
   }
@@ -1240,7 +1568,7 @@ const getPointerLabel = (labels) => {
     return { text: "", className: "" };
   }
 
-  const priority = ["is-mid", "is-right", "is-left", "is-index", "is-swap"];
+  const priority = ["is-pivot", "is-mid", "is-right", "is-left", "is-index", "is-swap"];
   const available = new Set(labels.map((label) => label.className));
   const className = priority.find((name) => available.has(name)) || "";
   const text = labels.map((label) => label.text).join("");
@@ -1248,6 +1576,82 @@ const getPointerLabel = (labels) => {
 };
 
 const renderSimulationTrack = (track, config, step) => {
+  if (config.type === "graph-traversal") {
+    const nodesHtml = config.nodes
+      .map((node) => {
+        const classes = ["sim-node"];
+        if (step.visited.includes(node)) {
+          classes.push("is-visited");
+        }
+        if (step.frontier.includes(node)) {
+          classes.push("is-frontier");
+        }
+        if (node === step.current) {
+          classes.push("is-active");
+        }
+
+        return `
+          <div class="sim-node-wrap">
+            <div class="${classes.join(" ")}">${escapeHtml(node)}</div>
+          </div>
+        `;
+      })
+      .join("");
+
+    track.innerHTML = `<div class="sim-graph">${nodesHtml}</div>`;
+    return;
+  }
+
+  if (config.type === "topological-sort") {
+    const nodesHtml = config.nodes
+      .map((node) => {
+        const classes = ["sim-node"];
+        if (step.order.includes(node)) {
+          classes.push("is-visited");
+        }
+        if (step.queue.includes(node)) {
+          classes.push("is-frontier");
+        }
+        if (node === step.current) {
+          classes.push("is-active");
+        }
+
+        return `
+          <div class="sim-node-wrap">
+            <div class="${classes.join(" ")}">${escapeHtml(node)}</div>
+            <span class="sim-degree">deg ${step.inDegree[node]}</span>
+          </div>
+        `;
+      })
+      .join("");
+
+    track.innerHTML = `<div class="sim-graph">${nodesHtml}</div>`;
+    return;
+  }
+
+  if (config.type === "two-heaps") {
+    const leftHtml = step.left.length
+      ? step.left.map((value) => `<span class="sim-heap-value">${escapeHtml(value)}</span>`).join("")
+      : `<span class="sim-heap-empty">Empty</span>`;
+    const rightHtml = step.right.length
+      ? step.right.map((value) => `<span class="sim-heap-value">${escapeHtml(value)}</span>`).join("")
+      : `<span class="sim-heap-empty">Empty</span>`;
+
+    track.innerHTML = `
+      <div class="sim-heaps">
+        <div class="sim-heap">
+          <h5>Max heap</h5>
+          <div class="sim-heap-values">${leftHtml}</div>
+        </div>
+        <div class="sim-heap">
+          <h5>Min heap</h5>
+          <div class="sim-heap-values">${rightHtml}</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
   const values = step.array ? step.array : config.array;
   const itemsHtml = values
     .map((value, index) => {
@@ -1302,6 +1706,44 @@ const renderSimulationTrack = (track, config, step) => {
         if (step.swapIndex !== null && index === step.swapIndex) {
           classes.push("is-swap");
           labels.push({ text: "J", className: "is-swap" });
+        }
+      }
+
+      if (config.type === "linear-search") {
+        if (index === step.index) {
+          classes.push("is-active");
+          labels.push({ text: "I", className: "is-index" });
+        }
+      }
+
+      if (config.type === "merge-sort") {
+        if (index >= step.start && index <= step.end) {
+          classes.push("is-window");
+        }
+        if (index === step.start) {
+          labels.push({ text: "L", className: "is-left" });
+        }
+        if (index === step.end) {
+          labels.push({ text: "R", className: "is-right" });
+        }
+        if (index === step.mid) {
+          labels.push({ text: "M", className: "is-mid" });
+        }
+      }
+
+      if (config.type === "quick-sort") {
+        if (index >= step.start && index <= step.end) {
+          classes.push("is-window");
+        }
+        if (index === step.start) {
+          labels.push({ text: "L", className: "is-left" });
+        }
+        if (index === step.end) {
+          labels.push({ text: "R", className: "is-right" });
+        }
+        if (index === step.pivot) {
+          classes.push("is-active", "is-pivot");
+          labels.push({ text: "P", className: "is-pivot" });
         }
       }
 
@@ -1379,6 +1821,60 @@ const renderSimulationState = (state, config, step, stepIndex, totalSteps) => {
     );
   }
 
+  if (config.type === "merge-sort") {
+    baseItems.push(
+      { label: "Range", value: `[${step.start}, ${step.end}]` },
+      { label: "Mid", value: String(step.mid) },
+      { label: "Action", value: step.action }
+    );
+  }
+
+  if (config.type === "quick-sort") {
+    baseItems.push(
+      { label: "Range", value: `[${step.start}, ${step.end}]` },
+      { label: "Pivot index", value: String(step.pivot) },
+      { label: "Pivot value", value: String(step.pivotValue) },
+      { label: "Action", value: step.action }
+    );
+  }
+
+  if (config.type === "linear-search") {
+    const status = step.found ? "Found" : stepIndex === totalSteps - 1 ? "Not found" : "Scanning";
+    baseItems.push(
+      { label: "Index", value: String(step.index) },
+      { label: "Value", value: String(step.value) },
+      { label: "Target", value: String(step.target) },
+      { label: "Status", value: status }
+    );
+  }
+
+  if (config.type === "graph-traversal") {
+    const frontierLabel = config.mode === "bfs" ? "Queue" : "Stack";
+    baseItems.push(
+      { label: "Mode", value: config.mode.toUpperCase() },
+      { label: "Current", value: step.current },
+      { label: frontierLabel, value: step.frontier.join(" -> ") || "-" },
+      { label: "Visited", value: step.order.join(" -> ") || "-" }
+    );
+  }
+
+  if (config.type === "topological-sort") {
+    baseItems.push(
+      { label: "Current", value: step.current },
+      { label: "Ready", value: step.queue.join(", ") || "-" },
+      { label: "Order", value: step.order.join(" -> ") || "-" }
+    );
+  }
+
+  if (config.type === "two-heaps") {
+    baseItems.push(
+      { label: "Inserted", value: String(step.value) },
+      { label: "Median", value: String(step.median) },
+      { label: "Left size", value: String(step.left.length) },
+      { label: "Right size", value: String(step.right.length) }
+    );
+  }
+
   state.innerHTML = baseItems
     .map(
       (item) => `
@@ -1403,6 +1899,9 @@ const createSimulationRunner = (config, container) => {
   }
 
   const steps = buildSimulationSteps(config);
+  if (!steps.length) {
+    return null;
+  }
   let stepIndex = 0;
   let timer = null;
 
@@ -1463,7 +1962,7 @@ const createSimulationRunner = (config, container) => {
   return { stop };
 };
 
-const setupPatternSimulation = (item, detailPane) => {
+const setupSimulation = (item, detailPane) => {
   if (activeSimulation) {
     activeSimulation.stop();
     activeSimulation = null;
@@ -1473,7 +1972,7 @@ const setupPatternSimulation = (item, detailPane) => {
     return;
   }
 
-  const config = patternSimulations[item.slug];
+  const config = simulationConfigs[item.slug];
   if (!config) {
     return;
   }
@@ -1695,6 +2194,9 @@ if (page === "algorithms") {
       title: "No algorithms found",
       body: "Try a different search term to see matching algorithms.",
     },
+    onSelect: ({ item, detailPane }) => {
+      setupSimulation(item, detailPane);
+    },
   });
 }
 
@@ -1710,7 +2212,7 @@ if (page === "patterns") {
       body: "Try a different search term to see matching patterns.",
     },
     onSelect: ({ item, detailPane }) => {
-      setupPatternSimulation(item, detailPane);
+      setupSimulation(item, detailPane);
     },
   });
 }

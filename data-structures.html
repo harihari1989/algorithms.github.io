@@ -56,10 +56,15 @@
           <div class="section-head">
             <div>
               <h2>All data structures</h2>
-              <p>Open any card to see summaries, pitfalls, and examples.</p>
+              <p>Select any card to see summaries, pitfalls, and examples.</p>
             </div>
           </div>
-          <div id="page-grid" class="card-grid"></div>
+          <div class="pattern-layout">
+            <div>
+              <div id="structure-list" class="card-grid pattern-list"></div>
+            </div>
+            <aside class="side-panel" id="structure-detail" aria-live="polite"></aside>
+          </div>
         </section>
       </main>
 

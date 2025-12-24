@@ -943,6 +943,39 @@ const renderFoundationCard = (item) => {
   `;
 };
 
+const renderFoundationListItem = (item) => `
+  <button class="card pattern-card" type="button" data-slug="${escapeHtml(item.slug)}">
+    <div class="pattern-card-body">
+      <h4>${escapeHtml(item.title)}</h4>
+      <p>${escapeHtml(item.summary)}</p>
+      <div class="card-summary-tags">
+        <span class="tag accent">${item.kind === "algorithm" ? "Algorithm" : "Data structure"}</span>
+      </div>
+    </div>
+  </button>
+`;
+
+const renderFoundationDetail = (item) => {
+  const sectionsHtml = item.sections.map((section) => renderSectionBlock(section.title, section.items)).join("");
+  const codeHtml = item.pythonCode ? renderCodeBlock(item.pythonCode) : "";
+  const examplesHtml = item.exampleProblems?.length ? renderExamples(item.exampleProblems) : "";
+
+  return `
+    <div class="side-panel-header">
+      <p class="eyebrow">${item.kind === "algorithm" ? "Algorithm" : "Data structure"}</p>
+      <h3>${escapeHtml(item.title)}</h3>
+      <p class="side-panel-summary">${escapeHtml(item.summary)}</p>
+    </div>
+    <div class="side-panel-body">
+      <p>${escapeHtml(item.description)}</p>
+      ${sectionsHtml}
+      ${renderMeta(item.complexity)}
+      ${codeHtml}
+      ${examplesHtml}
+    </div>
+  `;
+};
+
 const renderPatternCard = (item) => {
   const signalsHtml = item.signals?.length ? renderSectionBlock("Signals", item.signals) : "";
   const invariantsHtml = item.invariants?.length ? renderSectionBlock("Invariants", item.invariants) : "";
@@ -1110,6 +1143,72 @@ const setupSearch = (items, cards, onFilter) => {
   updateFilter();
 };
 
+const setupDetailList = ({
+  items,
+  listSelector,
+  detailSelector,
+  listRenderer,
+  detailRenderer,
+  emptyState,
+}) => {
+  const detailPane = document.querySelector(detailSelector);
+  const cards = renderCards(items, listRenderer, listSelector);
+  const itemBySlug = new Map(items.map((item) => [item.slug, item]));
+
+  const showEmptyState = () => {
+    if (!detailPane || !emptyState) {
+      return;
+    }
+    detailPane.innerHTML = `
+      <div class="side-panel-empty">
+        <h3>${emptyState.title}</h3>
+        <p>${emptyState.body}</p>
+      </div>
+    `;
+  };
+
+  const selectItem = (card) => {
+    const slug = card?.dataset.slug;
+    const item = slug ? itemBySlug.get(slug) : null;
+    if (!item || !detailPane) {
+      return;
+    }
+
+    cards.forEach((entry) => {
+      entry.classList.toggle("is-selected", entry === card);
+      entry.setAttribute("aria-pressed", entry === card ? "true" : "false");
+    });
+
+    detailPane.innerHTML = detailRenderer(item);
+  };
+
+  const selectFirstVisible = () => {
+    const active = cards.find(
+      (card) => card.classList.contains("is-selected") && !card.classList.contains("is-hidden")
+    );
+    if (active) {
+      return;
+    }
+    const first = cards.find((card) => !card.classList.contains("is-hidden"));
+    if (first) {
+      selectItem(first);
+      return;
+    }
+    showEmptyState();
+  };
+
+  cards.forEach((card) => {
+    card.addEventListener("click", () => selectItem(card));
+  });
+
+  setupSearch(items, cards, selectFirstVisible);
+  if (cards.length > 0) {
+    selectItem(cards[0]);
+  } else {
+    showEmptyState();
+  }
+};
+
 const page = document.body.dataset.page || "index";
 
 if (page === "index") {
@@ -1135,63 +1234,43 @@ if (page === "index") {
 }
 
 if (page === "data-structures") {
-  const cards = renderCards(dataStructures, renderFoundationCard, "#page-grid");
-  setupSearch(dataStructures, cards);
+  setupDetailList({
+    items: dataStructures,
+    listSelector: "#structure-list",
+    detailSelector: "#structure-detail",
+    listRenderer: renderFoundationListItem,
+    detailRenderer: renderFoundationDetail,
+    emptyState: {
+      title: "No data structures found",
+      body: "Try a different search term to see matching data structures.",
+    },
+  });
 }
 
 if (page === "algorithms") {
-  const cards = renderCards(algorithms, renderFoundationCard, "#page-grid");
-  setupSearch(algorithms, cards);
+  setupDetailList({
+    items: algorithms,
+    listSelector: "#algorithm-list",
+    detailSelector: "#algorithm-detail",
+    listRenderer: renderFoundationListItem,
+    detailRenderer: renderFoundationDetail,
+    emptyState: {
+      title: "No algorithms found",
+      body: "Try a different search term to see matching algorithms.",
+    },
+  });
 }
 
 if (page === "patterns") {
-  const detailPane = document.querySelector("#pattern-detail");
-  const cards = renderCards(patterns, renderPatternListItem, "#pattern-list");
-  const patternBySlug = new Map(patterns.map((pattern) => [pattern.slug, pattern]));
-
-  const selectPattern = (card) => {
-    const slug = card?.dataset.slug;
-    const item = slug ? patternBySlug.get(slug) : null;
-    if (!item || !detailPane) {
-      return;
-    }
-
-    cards.forEach((entry) => {
-      entry.classList.toggle("is-selected", entry === card);
-      entry.setAttribute("aria-pressed", entry === card ? "true" : "false");
-    });
-
-    detailPane.innerHTML = renderPatternDetail(item);
-  };
-
-  const selectFirstVisible = () => {
-    const active = cards.find(
-      (card) => card.classList.contains("is-selected") && !card.classList.contains("is-hidden")
-    );
-    if (active) {
-      return;
-    }
-    const first = cards.find((card) => !card.classList.contains("is-hidden"));
-    if (first) {
-      selectPattern(first);
-      return;
-    }
-    if (detailPane) {
-      detailPane.innerHTML = `
-        <div class="side-panel-empty">
-          <h3>No patterns found</h3>
-          <p>Try a different search term to see matching patterns.</p>
-        </div>
-      `;
-    }
-  };
-
-  cards.forEach((card) => {
-    card.addEventListener("click", () => selectPattern(card));
+  setupDetailList({
+    items: patterns,
+    listSelector: "#pattern-list",
+    detailSelector: "#pattern-detail",
+    listRenderer: renderPatternListItem,
+    detailRenderer: renderPatternDetail,
+    emptyState: {
+      title: "No patterns found",
+      body: "Try a different search term to see matching patterns.",
+    },
   });
-
-  setupSearch(patterns, cards, selectFirstVisible);
-  if (cards.length > 0) {
-    selectPattern(cards[0]);
-  }
 }

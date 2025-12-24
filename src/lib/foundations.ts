@@ -1,5 +1,5 @@
 import { exampleArrays, exampleGraph } from './examples';
-import type { LessonDefinition, Step, TreeState, VizState } from './types';
+import type { LessonDefinition, Step, TreeNode, TreeState, VizState } from './types';
 import { createSeededRandom, randomInt, range, shuffle } from './utils';
 
 const makeStep = (title: string, state: VizState, codeLineHighlights?: number[]): Step => ({
@@ -361,7 +361,7 @@ const makeHashTableSteps = ({ buckets, key, value }: HashTableInput) => {
 type TreeSearchInput = { tree: TreeState; target: number };
 const makeTreeSteps = ({ tree, target }: TreeSearchInput) => {
   const steps: Step[] = [];
-  let node = tree.root;
+  let node: TreeNode | undefined = tree.root;
   while (node) {
     steps.push(
       makeStep(`Visit ${node.value}`, {

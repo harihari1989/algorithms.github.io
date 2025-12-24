@@ -18,6 +18,7 @@ import TopKElementsPage from './pages/patterns/top-k-elements';
 import TopologicalSortPage from './pages/patterns/topological-sort';
 import TwoHeapsPage from './pages/patterns/two-heaps';
 import TwoPointersPage from './pages/patterns/two-pointers';
+import FoundationPage from './pages/foundations/FoundationPage';
 
 export default function App() {
   return (
@@ -43,6 +44,8 @@ export default function App() {
             <Route path="/patterns/knapsack" element={<KnapsackPage />} />
             <Route path="/patterns/topological-sort" element={<TopologicalSortPage />} />
             <Route path="/patterns/backtracking" element={<BacktrackingPage />} />
+            <Route path="/data-structures/:slug" element={<FoundationPage kind="data-structure" />} />
+            <Route path="/algorithms/:slug" element={<FoundationPage kind="algorithm" />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

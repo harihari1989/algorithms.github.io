@@ -9,6 +9,7 @@ export default function PatternCard({ pattern }: PatternCardProps) {
   return (
     <Link className="pattern-card" to={`/patterns/${pattern.slug}`}>
       <div>
+        <span className="kind-pill pattern">Pattern</span>
         <h3>{pattern.title}</h3>
         <p>{pattern.summary}</p>
       </div>

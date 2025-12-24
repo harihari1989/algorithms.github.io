@@ -2,11 +2,127 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Algorithm Field Guide</title>
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body data-page="index">
+    <div class="page">
+      <header class="site-header">
+        <div class="logo">Algorithm Field Guide</div>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="data-structures.html">Data structures</a>
+          <a href="algorithms.html">Algorithms</a>
+          <a href="patterns.html">Patterns</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero" id="top">
+          <div class="hero-copy">
+            <p class="eyebrow">Algorithms you can see, not just memorize.</p>
+            <h1>Clarity-first notes for core CS ideas.</h1>
+            <p class="hero-subtitle">
+              A multi-page guide to data structures, algorithms, and interview patterns. Built as a
+              static site so it loads fast and stays easy to maintain.
+            </p>
+            <div class="hero-actions">
+              <a class="button-link" href="data-structures.html">Explore data structures</a>
+              <a class="button-link outline" href="algorithms.html">Browse algorithms</a>
+              <a class="button-link ghost" href="patterns.html">Interview patterns</a>
+            </div>
+            <div class="hero-stats">
+              <div>
+                <strong id="structures-count">0</strong>
+                <span>Data structures</span>
+              </div>
+              <div>
+                <strong id="algorithms-count">0</strong>
+                <span>Algorithms</span>
+              </div>
+              <div>
+                <strong id="patterns-count">0</strong>
+                <span>Patterns</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-panel">
+            <h2>How to use this guide</h2>
+            <ol>
+              <li>Start with data structures to build the mental model.</li>
+              <li>Pick an algorithm and follow the steps and pitfalls.</li>
+              <li>Use patterns to generalize across problem sets.</li>
+            </ol>
+            <div class="hero-callout">
+              <p>
+                Each page is searchable. Open a card to see summaries, pitfalls, complexity, and a Python
+                sketch.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="data-structures" class="section">
+          <div class="section-head">
+            <div>
+              <h2>Data structures</h2>
+              <p>Storage and access patterns that power the rest of the guide.</p>
+            </div>
+            <a class="section-link" href="data-structures.html">View all</a>
+          </div>
+          <div id="structures-preview" class="card-grid"></div>
+        </section>
+
+        <section id="algorithms" class="section">
+          <div class="section-head">
+            <div>
+              <h2>Algorithms</h2>
+              <p>Step-by-step procedures for searching, sorting, and traversing.</p>
+            </div>
+            <a class="section-link" href="algorithms.html">View all</a>
+          </div>
+          <div id="algorithms-preview" class="card-grid"></div>
+        </section>
+
+        <section id="patterns" class="section">
+          <div class="section-head">
+            <div>
+              <h2>Interview patterns</h2>
+              <p>Reusable strategies that show up across many problems.</p>
+            </div>
+            <a class="section-link" href="patterns.html">View all</a>
+          </div>
+          <div id="patterns-preview" class="card-grid"></div>
+        </section>
+
+        <section id="start-here" class="section">
+          <div class="section-head">
+            <div>
+              <h2>Start here</h2>
+              <p>Short, practical paths so you can jump in fast.</p>
+            </div>
+          </div>
+          <div class="about-grid">
+            <article class="info-card">
+              <h3>Pick a foundation</h3>
+              <p>Open any data structure or algorithm card to see steps, pitfalls, and complexity.</p>
+            </article>
+            <article class="info-card">
+              <h3>Search by signal</h3>
+              <p>Try “contiguous”, “heap”, or “k-way merge” on the category pages.</p>
+            </article>
+            <article class="info-card">
+              <h3>Pattern match</h3>
+              <p>Use the patterns page to generalize solutions across problem sets.</p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Algorithm Field Guide.</p>
+      </footer>
+    </div>
+    <script src="script.js" defer></script>
   </body>
 </html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Algorithms | Algorithm Field Guide</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.bunny.net/css?family=playfair-display:500,700|space-grotesk:400,500,600,700|ibm-plex-mono:400,500"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-page="algorithms">
+    <div class="page">
+      <header class="site-header">
+        <div class="logo">Algorithm Field Guide</div>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="data-structures.html">Data structures</a>
+          <a href="algorithms.html">Algorithms</a>
+          <a href="patterns.html">Patterns</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero hero--compact">
+          <div class="hero-copy">
+            <p class="eyebrow">Algorithms</p>
+            <h1>See the flow, not just the code.</h1>
+            <p class="hero-subtitle">
+              Step through core searching, sorting, and traversal algorithms with concise explanations,
+              pitfalls, and Python sketches.
+            </p>
+            <div class="search-bar">
+              <label class="search-label" for="search-input">Search algorithms</label>
+              <input
+                id="search-input"
+                type="search"
+                placeholder="Search binary search, merge sort, DFS..."
+                autocomplete="off"
+              />
+              <p class="search-meta" id="results-count">0 entries</p>
+            </div>
+          </div>
+          <div class="hero-panel">
+            <h2>How to scan fast</h2>
+            <ul class="hero-list">
+              <li>Read the summary, then jump to the pitfalls.</li>
+              <li>Call out time and space complexity in one line.</li>
+              <li>Use example problems to validate recall.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <h2>All algorithms</h2>
+              <p>Open any card to see key steps and complexity.</p>
+            </div>
+          </div>
+          <div id="page-grid" class="card-grid"></div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Algorithm Field Guide.</p>
+      </footer>
+    </div>
+    <script src="script.js" defer></script>
+  </body>
+</html>

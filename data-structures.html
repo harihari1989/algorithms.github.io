@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data Structures | Algorithm Field Guide</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.bunny.net/css?family=playfair-display:500,700|space-grotesk:400,500,600,700|ibm-plex-mono:400,500"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-page="data-structures">
+    <div class="page">
+      <header class="site-header">
+        <div class="logo">Algorithm Field Guide</div>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="data-structures.html">Data structures</a>
+          <a href="algorithms.html">Algorithms</a>
+          <a href="patterns.html">Patterns</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero hero--compact">
+          <div class="hero-copy">
+            <p class="eyebrow">Data structures</p>
+            <h1>Build the mental model first.</h1>
+            <p class="hero-subtitle">
+              Understand how data is stored, linked, and accessed. Each card includes core operations,
+              pitfalls, complexity, and a Python sketch.
+            </p>
+            <div class="search-bar">
+              <label class="search-label" for="search-input">Search data structures</label>
+              <input
+                id="search-input"
+                type="search"
+                placeholder="Search arrays, heaps, graphs..."
+                autocomplete="off"
+              />
+              <p class="search-meta" id="results-count">0 entries</p>
+            </div>
+          </div>
+          <div class="hero-panel">
+            <h2>What to focus on</h2>
+            <ul class="hero-list">
+              <li>Core operations and when they are fast or slow.</li>
+              <li>Common pitfalls that show up in interviews.</li>
+              <li>Complexity tradeoffs you can explain quickly.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <h2>All data structures</h2>
+              <p>Open any card to see summaries, pitfalls, and examples.</p>
+            </div>
+          </div>
+          <div id="page-grid" class="card-grid"></div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Algorithm Field Guide.</p>
+      </footer>
+    </div>
+    <script src="script.js" defer></script>
+  </body>
+</html>

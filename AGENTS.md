@@ -1,24 +1,22 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-The repository is currently minimal, with a root-level `README.md`. When adding site sources, keep a clear top-level layout and document each directory in `README.md` and this file. Suggested conventions:
-- `src/` for algorithm writeups, demos, or site content.
-- `assets/` for diagrams, images, and other media.
-- `tests/` for automated checks.
-- `scripts/` for build or maintenance helpers.
-Group algorithms by topic (e.g., `src/sorting/`, `src/graphs/`) to keep navigation predictable.
+The site is a simple static build with everything at the repository root.
+- `.github/` stores GitHub metadata and workflows.
+- `index.html` is the home page.
+- `data-structures.html`, `algorithms.html`, and `patterns.html` are the category pages.
+- `styles.css` contains all styling.
+- `script.js` stores the content data and rendering logic.
+
+Keep new assets at the top level unless there is a strong reason to add a directory, and document any new directories here and in `README.md`.
 
 ## Build, Test, and Development Commands
-No build or test commands are defined yet. If you introduce a build system, expose a single entry point (prefer `Makefile` or `package.json` scripts) and list the commands here.
-Example (if introduced):
-- `make dev` starts a local preview server.
-- `make build` produces static output (e.g., `dist/`).
-- `make test` runs tests and linters.
+No build or test commands are defined. The site is static and can be opened directly in the browser.
 
 ## Coding Style & Naming Conventions
 - Markdown: sentence-case headings, one blank line between sections, and short paragraphs.
 - Python snippets: PEP 8, 4-space indentation, `snake_case` names.
-- Filenames: lowercase `kebab-case` with topic/context (e.g., `binary-search-step-1.svg`). Avoid spaces.
+- Filenames: lowercase `kebab-case` with topic/context. Avoid spaces.
 
 ## Testing Guidelines
 There are no tests yet. If you add tests, place them under `tests/` and use clear names such as `test_sorting.py` or `render.spec.ts` depending on language. Focus coverage on algorithm correctness and any rendering/visualization helpers.

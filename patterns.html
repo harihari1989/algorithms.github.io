@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Patterns | Algorithm Field Guide</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.bunny.net/css?family=playfair-display:500,700|space-grotesk:400,500,600,700|ibm-plex-mono:400,500"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-page="patterns">
+    <div class="page">
+      <header class="site-header">
+        <div class="logo">Algorithm Field Guide</div>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="data-structures.html">Data structures</a>
+          <a href="algorithms.html">Algorithms</a>
+          <a href="patterns.html">Patterns</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero hero--compact">
+          <div class="hero-copy">
+            <p class="eyebrow">Interview patterns</p>
+            <h1>Generalize fast across problems.</h1>
+            <p class="hero-subtitle">
+              Recognize repeatable strategies like sliding window, two pointers, and topological sort.
+              Each card highlights signals, invariants, and pitfalls.
+            </p>
+            <div class="search-bar">
+              <label class="search-label" for="search-input">Search patterns</label>
+              <input
+                id="search-input"
+                type="search"
+                placeholder="Search sliding window, knapsack, top-k..."
+                autocomplete="off"
+              />
+              <p class="search-meta" id="results-count">0 entries</p>
+            </div>
+          </div>
+          <div class="hero-panel">
+            <h2>Pattern checklist</h2>
+            <ul class="hero-list">
+              <li>Signals tell you when the pattern applies.</li>
+              <li>Invariants explain what must stay true.</li>
+              <li>Pitfalls remind you what to avoid.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <h2>All patterns</h2>
+              <p>Use these as your first pass on new problems.</p>
+            </div>
+          </div>
+          <div class="pattern-layout">
+            <div>
+              <div id="pattern-list" class="card-grid pattern-list"></div>
+            </div>
+            <aside class="side-panel" id="pattern-detail" aria-live="polite"></aside>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Algorithm Field Guide.</p>
+      </footer>
+    </div>
+    <script src="script.js" defer></script>
+  </body>
+</html>

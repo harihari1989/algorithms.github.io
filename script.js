@@ -875,6 +875,36 @@ const patterns = [
   },
 ];
 
+const patternSimulations = {
+  "sliding-window": {
+    title: "Max sum window",
+    description: "Find the max sum of any 3 consecutive elements.",
+    type: "sliding-window",
+    array: [2, 1, 5, 1, 3, 2, 9, 7],
+    windowSize: 3,
+  },
+  "two-pointers": {
+    title: "Two sum (sorted)",
+    description: "Move pointers inward to hit the target sum.",
+    type: "two-pointers",
+    array: [1, 2, 3, 4, 6, 8, 11],
+    target: 10,
+  },
+  "modified-binary-search": {
+    title: "Binary search",
+    description: "Halve the search range until the target is found.",
+    type: "binary-search",
+    array: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    target: 6,
+  },
+  "cyclic-sort": {
+    title: "Cyclic swap",
+    description: "Swap each value into its correct index.",
+    type: "cyclic-sort",
+    array: [3, 1, 5, 4, 2],
+  },
+};
+
 const escapeHtml = (value) =>
   String(value)
     .replace(/&/g, "&amp;")
@@ -917,6 +947,40 @@ const renderExamples = (examples) => `
     <ul>${renderList(examples)}</ul>
   </div>
 `;
+
+const renderSimulationPanel = (item) => {
+  const config = patternSimulations[item.slug];
+  if (!config) {
+    return `
+      <section class="simulator simulator--empty">
+        <div class="simulator-header">
+          <p class="eyebrow">Simulation</p>
+          <h4>Interactive walkthrough</h4>
+        </div>
+        <p class="simulator-subtitle">Interactive visualization is not available for this pattern yet.</p>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="simulator" data-sim="${escapeHtml(item.slug)}">
+      <div class="simulator-header">
+        <div>
+          <p class="eyebrow">Simulation</p>
+          <h4>${escapeHtml(config.title)}</h4>
+          <p class="simulator-subtitle">${escapeHtml(config.description)}</p>
+        </div>
+        <div class="simulator-controls">
+          <button class="sim-button ghost" type="button" data-sim-action="reset">Reset</button>
+          <button class="sim-button" type="button" data-sim-action="step">Step</button>
+          <button class="sim-button accent" type="button" data-sim-action="play">Play</button>
+        </div>
+      </div>
+      <div class="simulator-track" data-sim-track></div>
+      <div class="simulator-state" data-sim-state></div>
+    </section>
+  `;
+};
 
 const renderFoundationCard = (item) => {
   const sectionsHtml = item.sections.map((section) => renderSectionBlock(section.title, section.items)).join("");
@@ -1044,6 +1108,7 @@ const renderPatternDetail = (item) => {
       <h3>${escapeHtml(item.title)}</h3>
       <p class="side-panel-summary">${escapeHtml(item.summary)}</p>
     </div>
+    ${renderSimulationPanel(item)}
     <div class="side-panel-body">
       <p>${escapeHtml(item.description)}</p>
       ${signalsHtml}
@@ -1054,6 +1119,371 @@ const renderPatternDetail = (item) => {
       ${examplesHtml}
     </div>
   `;
+};
+
+let activeSimulation = null;
+
+const buildSlidingWindowSteps = (config) => {
+  const steps = [];
+  const values = config.array;
+  const windowSize = config.windowSize;
+  let left = 0;
+  let windowSum = 0;
+  let maxSum = Number.NEGATIVE_INFINITY;
+
+  for (let right = 0; right < values.length; right += 1) {
+    windowSum += values[right];
+    if (right - left + 1 > windowSize) {
+      windowSum -= values[left];
+      left += 1;
+    }
+    if (right - left + 1 === windowSize) {
+      maxSum = Math.max(maxSum, windowSum);
+    }
+    steps.push({ left, right, windowSum, maxSum, windowSize });
+  }
+
+  return steps;
+};
+
+const buildTwoPointersSteps = (config) => {
+  const values = config.array;
+  const target = config.target;
+  const steps = [];
+  let left = 0;
+  let right = values.length - 1;
+
+  while (left <= right) {
+    const sum = values[left] + values[right];
+    const found = sum === target && left !== right;
+    steps.push({ left, right, sum, target, found });
+    if (found) {
+      break;
+    }
+    if (sum < target) {
+      left += 1;
+    } else {
+      right -= 1;
+    }
+  }
+
+  return steps;
+};
+
+const buildBinarySearchSteps = (config) => {
+  const values = config.array;
+  const target = config.target;
+  const steps = [];
+  let left = 0;
+  let right = values.length - 1;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    const value = values[mid];
+    const found = value === target;
+    const comparison = found ? "found" : value < target ? "go right" : "go left";
+    steps.push({ left, right, mid, value, target, found, comparison });
+    if (found) {
+      break;
+    }
+    if (value < target) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+
+  return steps;
+};
+
+const buildCyclicSortSteps = (config) => {
+  const steps = [];
+  const values = [...config.array];
+  let index = 0;
+
+  while (index < values.length) {
+    const targetIndex = values[index] - 1;
+    if (values[index] !== values[targetIndex]) {
+      const swapped = [...values];
+      const temp = swapped[index];
+      swapped[index] = swapped[targetIndex];
+      swapped[targetIndex] = temp;
+      steps.push({ array: swapped, index, swapIndex: targetIndex, action: "swap" });
+      values[index] = swapped[index];
+      values[targetIndex] = swapped[targetIndex];
+    } else {
+      steps.push({ array: [...values], index, swapIndex: null, action: "advance" });
+      index += 1;
+    }
+  }
+
+  return steps;
+};
+
+const buildSimulationSteps = (config) => {
+  switch (config.type) {
+    case "sliding-window":
+      return buildSlidingWindowSteps(config);
+    case "two-pointers":
+      return buildTwoPointersSteps(config);
+    case "binary-search":
+      return buildBinarySearchSteps(config);
+    case "cyclic-sort":
+      return buildCyclicSortSteps(config);
+    default:
+      return [];
+  }
+};
+
+const getPointerLabel = (labels) => {
+  if (!labels.length) {
+    return { text: "", className: "" };
+  }
+
+  const priority = ["is-mid", "is-right", "is-left", "is-index", "is-swap"];
+  const available = new Set(labels.map((label) => label.className));
+  const className = priority.find((name) => available.has(name)) || "";
+  const text = labels.map((label) => label.text).join("");
+  return { text, className };
+};
+
+const renderSimulationTrack = (track, config, step) => {
+  const values = step.array ? step.array : config.array;
+  const itemsHtml = values
+    .map((value, index) => {
+      const classes = ["sim-cell"];
+      const labels = [];
+
+      if (config.type === "sliding-window") {
+        const inWindow = index >= step.left && index <= step.right;
+        if (inWindow) {
+          classes.push("is-window");
+        }
+        if (index === step.left) {
+          labels.push({ text: "L", className: "is-left" });
+        }
+        if (index === step.right) {
+          classes.push("is-active");
+          labels.push({ text: "R", className: "is-right" });
+        }
+      }
+
+      if (config.type === "two-pointers") {
+        if (index === step.left) {
+          classes.push("is-left");
+          labels.push({ text: "L", className: "is-left" });
+        }
+        if (index === step.right) {
+          classes.push("is-right");
+          labels.push({ text: "R", className: "is-right" });
+        }
+      }
+
+      if (config.type === "binary-search") {
+        if (index === step.left) {
+          classes.push("is-left");
+          labels.push({ text: "L", className: "is-left" });
+        }
+        if (index === step.right) {
+          classes.push("is-right");
+          labels.push({ text: "R", className: "is-right" });
+        }
+        if (index === step.mid) {
+          classes.push("is-active", "is-mid");
+          labels.push({ text: "M", className: "is-mid" });
+        }
+      }
+
+      if (config.type === "cyclic-sort") {
+        if (index === step.index) {
+          classes.push("is-index");
+          labels.push({ text: "I", className: "is-index" });
+        }
+        if (step.swapIndex !== null && index === step.swapIndex) {
+          classes.push("is-swap");
+          labels.push({ text: "J", className: "is-swap" });
+        }
+      }
+
+      const pointerLabel = getPointerLabel(labels);
+      const pointerHtml = pointerLabel.text
+        ? `<span class="sim-pointer ${pointerLabel.className}">${pointerLabel.text}</span>`
+        : "";
+
+      return `
+        <div class="sim-item">
+          ${pointerHtml}
+          <div class="${classes.join(" ")}">${escapeHtml(value)}</div>
+          <span class="sim-index">${index}</span>
+        </div>
+      `;
+    })
+    .join("");
+
+  track.innerHTML = `<div class="sim-array">${itemsHtml}</div>`;
+};
+
+const renderSimulationState = (state, config, step, stepIndex, totalSteps) => {
+  const baseItems = [
+    { label: "Step", value: `${stepIndex + 1} / ${totalSteps}` },
+  ];
+
+  if (config.type === "sliding-window") {
+    const windowSize = step.right - step.left + 1;
+    const maxSum = step.maxSum === Number.NEGATIVE_INFINITY ? "-" : String(step.maxSum);
+    baseItems.push(
+      { label: "Window", value: `[${step.left}, ${step.right}]` },
+      { label: "Window size", value: `${windowSize} / ${config.windowSize}` },
+      { label: "Window sum", value: String(step.windowSum) },
+      { label: "Best sum", value: maxSum }
+    );
+  }
+
+  if (config.type === "two-pointers") {
+    const status = step.found
+      ? "Match found"
+      : stepIndex === totalSteps - 1
+        ? "No match"
+        : "Searching";
+    baseItems.push(
+      { label: "Left", value: String(step.left) },
+      { label: "Right", value: String(step.right) },
+      { label: "Sum", value: String(step.sum) },
+      { label: "Target", value: String(step.target) },
+      { label: "Status", value: status }
+    );
+  }
+
+  if (config.type === "binary-search") {
+    const status = step.found
+      ? "Found"
+      : stepIndex === totalSteps - 1
+        ? "Not found"
+        : "Searching";
+    baseItems.push(
+      { label: "Range", value: `[${step.left}, ${step.right}]` },
+      { label: "Mid", value: String(step.mid) },
+      { label: "Mid value", value: String(step.value) },
+      { label: "Target", value: String(step.target) },
+      { label: "Decision", value: step.comparison },
+      { label: "Status", value: status }
+    );
+  }
+
+  if (config.type === "cyclic-sort") {
+    const targetIndex = step.swapIndex === null ? "-" : String(step.swapIndex);
+    baseItems.push(
+      { label: "Index", value: String(step.index) },
+      { label: "Swap target", value: targetIndex },
+      { label: "Action", value: step.action }
+    );
+  }
+
+  state.innerHTML = baseItems
+    .map(
+      (item) => `
+        <div class="sim-state-item">
+          <strong>${escapeHtml(item.label)}</strong>
+          <span>${escapeHtml(item.value)}</span>
+        </div>
+      `
+    )
+    .join("");
+};
+
+const createSimulationRunner = (config, container) => {
+  const track = container.querySelector("[data-sim-track]");
+  const state = container.querySelector("[data-sim-state]");
+  const playButton = container.querySelector('[data-sim-action="play"]');
+  const stepButton = container.querySelector('[data-sim-action="step"]');
+  const resetButton = container.querySelector('[data-sim-action="reset"]');
+
+  if (!track || !state || !playButton || !stepButton || !resetButton) {
+    return null;
+  }
+
+  const steps = buildSimulationSteps(config);
+  let stepIndex = 0;
+  let timer = null;
+
+  const updatePlayLabel = (isPlaying) => {
+    playButton.textContent = isPlaying ? "Pause" : "Play";
+  };
+
+  const render = () => {
+    const current = steps[stepIndex];
+    renderSimulationTrack(track, config, current);
+    renderSimulationState(state, config, current, stepIndex, steps.length);
+  };
+
+  const stop = () => {
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+    updatePlayLabel(false);
+  };
+
+  const next = () => {
+    if (stepIndex >= steps.length - 1) {
+      stop();
+      return;
+    }
+    stepIndex += 1;
+    render();
+    if (stepIndex >= steps.length - 1) {
+      stop();
+    }
+  };
+
+  const start = () => {
+    if (timer) {
+      stop();
+      return;
+    }
+    updatePlayLabel(true);
+    timer = setInterval(next, 900);
+  };
+
+  const reset = () => {
+    stop();
+    stepIndex = 0;
+    render();
+  };
+
+  playButton.addEventListener("click", start);
+  stepButton.addEventListener("click", () => {
+    stop();
+    next();
+  });
+  resetButton.addEventListener("click", reset);
+
+  render();
+
+  return { stop };
+};
+
+const setupPatternSimulation = (item, detailPane) => {
+  if (activeSimulation) {
+    activeSimulation.stop();
+    activeSimulation = null;
+  }
+
+  if (!item || !detailPane) {
+    return;
+  }
+
+  const config = patternSimulations[item.slug];
+  if (!config) {
+    return;
+  }
+
+  const container = detailPane.querySelector(`[data-sim="${item.slug}"]`);
+  if (!container) {
+    return;
+  }
+
+  activeSimulation = createSimulationRunner(config, container);
 };
 
 const buildSearchText = (item) => {
@@ -1150,6 +1580,7 @@ const setupDetailList = ({
   listRenderer,
   detailRenderer,
   emptyState,
+  onSelect,
 }) => {
   const detailPane = document.querySelector(detailSelector);
   const cards = renderCards(items, listRenderer, listSelector);
@@ -1165,6 +1596,9 @@ const setupDetailList = ({
         <p>${emptyState.body}</p>
       </div>
     `;
+    if (onSelect) {
+      onSelect({ item: null, detailPane, card: null });
+    }
   };
 
   const selectItem = (card) => {
@@ -1180,6 +1614,9 @@ const setupDetailList = ({
     });
 
     detailPane.innerHTML = detailRenderer(item);
+    if (onSelect) {
+      onSelect({ item, detailPane, card });
+    }
   };
 
   const selectFirstVisible = () => {
@@ -1271,6 +1708,9 @@ if (page === "patterns") {
     emptyState: {
       title: "No patterns found",
       body: "Try a different search term to see matching patterns.",
+    },
+    onSelect: ({ item, detailPane }) => {
+      setupPatternSimulation(item, detailPane);
     },
   });
 }

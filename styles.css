@@ -666,6 +666,37 @@ body::before {
   padding: 18px;
 }
 
+.sim-problem {
+  margin-top: 12px;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  display: grid;
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.sim-problem strong {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.sim-problem p {
+  margin: 0;
+  color: var(--ink);
+}
+
+.sim-problem-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ink);
+}
+
 .sim-array {
   display: flex;
   gap: 12px;
@@ -679,6 +710,108 @@ body::before {
   gap: 16px;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+.sim-graph-canvas {
+  position: relative;
+  min-height: 240px;
+  border-radius: 14px;
+  background: #fff;
+  background-image: radial-gradient(circle at 1px 1px, rgba(29, 111, 115, 0.08) 1px, transparent 0);
+  background-size: 22px 22px;
+  border: 1px dashed rgba(29, 111, 115, 0.2);
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+.sim-graph-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sim-edge {
+  color: rgba(29, 111, 115, 0.6);
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.sim-edge.is-selected {
+  color: rgba(29, 111, 115, 0.95);
+  stroke-width: 3;
+  filter: drop-shadow(0 4px 8px rgba(29, 111, 115, 0.25));
+}
+
+.sim-edge.is-active {
+  color: var(--accent);
+  stroke-width: 3.2;
+  filter: drop-shadow(0 6px 10px rgba(210, 75, 51, 0.25));
+}
+
+.sim-edge.is-muted {
+  color: rgba(30, 27, 22, 0.2);
+}
+
+.sim-edge-weight {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  fill: rgba(30, 27, 22, 0.7);
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 3px;
+}
+
+.sim-graph-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.sim-node.is-selected {
+  border-color: rgba(29, 111, 115, 0.75);
+  background: rgba(29, 111, 115, 0.08);
+}
+
+.sim-node.is-dependency {
+  border-color: rgba(241, 196, 83, 0.8);
+  background: rgba(241, 196, 83, 0.1);
+}
+
+.sim-matrix {
+  display: grid;
+  gap: 10px;
+  justify-content: center;
+}
+
+.sim-matrix-row {
+  display: flex;
+  gap: 10px;
+}
+
+.sim-cell.is-dependency {
+  border-color: rgba(241, 196, 83, 0.8);
+  background: rgba(241, 196, 83, 0.1);
+}
+
+.sim-cell.is-base {
+  border-color: rgba(29, 111, 115, 0.6);
+  background: rgba(29, 111, 115, 0.08);
+  color: var(--teal);
+}
+
+.sim-split {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  align-items: start;
+}
+
+.sim-stack {
+  display: grid;
+  gap: 12px;
 }
 
 .sim-node-wrap {
@@ -696,11 +829,12 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: linear-gradient(135deg, #fff 0%, #f2f7f6 100%);
   font-family: var(--font-mono);
   font-weight: 600;
   color: var(--ink);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 8px 16px rgba(30, 27, 22, 0.08);
 }
 
 .sim-node.is-visited {

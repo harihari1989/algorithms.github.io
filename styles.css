@@ -587,6 +587,73 @@ body::before {
   line-height: 1.6;
 }
 
+.op-chart {
+  margin: 16px 0;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+}
+
+.op-chart-title {
+  margin: 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--teal);
+}
+
+.op-chart-note {
+  margin: 6px 0 12px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.op-row {
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.op-row + .op-row {
+  margin-top: 10px;
+}
+
+.op-name {
+  display: block;
+  font-weight: 600;
+}
+
+.op-note {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+}
+
+.op-bar {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(29, 111, 115, 0.12);
+  overflow: hidden;
+}
+
+.op-fill {
+  position: absolute;
+  inset: 0;
+  width: calc(var(--rank) * 20%);
+  background: linear-gradient(90deg, rgba(29, 111, 115, 0.9) 0%, rgba(210, 75, 51, 0.9) 100%);
+}
+
+.op-value {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ink);
+}
+
 .side-panel-empty {
   text-align: center;
   padding: 32px 16px;
@@ -1114,6 +1181,15 @@ code {
 
   .hero-stats {
     gap: 12px;
+  }
+
+  .op-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .op-value {
+    justify-self: start;
   }
 
   .sim-cell {

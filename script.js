@@ -325,6 +325,69 @@ const knapsackCode = `def knapsack(weights, values, capacity):
 
     return dp[capacity]`;
 
+const dynamicProgrammingCode = `def fib_memo(n, memo=None):
+    if memo is None:
+        memo = {0: 0, 1: 1}
+    if n in memo:
+        return memo[n]
+    memo[n] = fib_memo(n - 1, memo) + fib_memo(n - 2, memo)
+    return memo[n]
+
+
+def make_change(amount, coins):
+    dp = [float("inf")] * (amount + 1)
+    dp[0] = 0
+    for coin in coins:
+        for total in range(coin, amount + 1):
+            dp[total] = min(dp[total], dp[total - coin] + 1)
+    return dp[amount] if dp[amount] != float("inf") else -1`;
+
+const fibonacciCode = `def fib(n):
+    if n <= 1:
+        return n
+    a, b = 0, 1
+    for _ in range(2, n + 1):
+        a, b = b, a + b
+    return b`;
+
+const coinChangeCode = `def coin_change(amount, coins):
+    dp = [float("inf")] * (amount + 1)
+    dp[0] = 0
+    for coin in coins:
+        for total in range(coin, amount + 1):
+            dp[total] = min(dp[total], dp[total - coin] + 1)
+    return dp[amount] if dp[amount] != float("inf") else -1`;
+
+const squareSubmatrixCode = `def largest_square(matrix):
+    if not matrix:
+        return 0
+    rows, cols = len(matrix), len(matrix[0])
+    dp = [[0] * cols for _ in range(rows)]
+    best = 0
+
+    for r in range(rows):
+        for c in range(cols):
+            if matrix[r][c] == 1:
+                if r == 0 or c == 0:
+                    dp[r][c] = 1
+                else:
+                    dp[r][c] = 1 + min(dp[r - 1][c], dp[r][c - 1], dp[r - 1][c - 1])
+                best = max(best, dp[r][c])
+
+    return best`;
+
+const targetSumCode = `def target_sum(nums, target):
+    total = sum(nums)
+    if (total + target) % 2 != 0:
+        return 0
+    subset = (total + target) // 2
+    dp = [0] * (subset + 1)
+    dp[0] = 1
+    for num in nums:
+        for s in range(subset, num - 1, -1):
+            dp[s] += dp[s - num]
+    return dp[subset]`;
+
 const topoSortCode = `from collections import deque
 
 def topo_sort(nodes, edges):
@@ -347,6 +410,322 @@ def topo_sort(nodes, edges):
                 q.append(v)
 
     return order`;
+
+const dijkstraCode = `import heapq
+
+def dijkstra(graph, start):
+    dist = {node: float("inf") for node in graph}
+    dist[start] = 0
+    heap = [(0, start)]
+
+    while heap:
+        cur_dist, node = heapq.heappop(heap)
+        if cur_dist != dist[node]:
+            continue
+        for nxt, weight in graph[node]:
+            new_dist = cur_dist + weight
+            if new_dist < dist[nxt]:
+                dist[nxt] = new_dist
+                heapq.heappush(heap, (new_dist, nxt))
+
+    return dist`;
+
+const bellmanFordCode = `def bellman_ford(nodes, edges, start):
+    dist = {n: float("inf") for n in nodes}
+    dist[start] = 0
+
+    for _ in range(len(nodes) - 1):
+        updated = False
+        for u, v, w in edges:
+            if dist[u] == float("inf"):
+                continue
+            if dist[u] + w < dist[v]:
+                dist[v] = dist[u] + w
+                updated = True
+        if not updated:
+            break
+
+    return dist`;
+
+const floydWarshallCode = `def floyd_warshall(nodes, edges):
+    dist = {u: {v: float("inf") for v in nodes} for u in nodes}
+    for n in nodes:
+        dist[n][n] = 0
+    for u, v, w in edges:
+        if w < dist[u][v]:
+            dist[u][v] = w
+
+    for k in nodes:
+        for i in nodes:
+            for j in nodes:
+                alt = dist[i][k] + dist[k][j]
+                if alt < dist[i][j]:
+                    dist[i][j] = alt
+
+    return dist`;
+
+const aStarCode = `import heapq
+
+def a_star(start, goal, neighbors, heuristic):
+    frontier = [(heuristic(start), 0, start, None)]
+    best = {start: 0}
+    came_from = {}
+
+    while frontier:
+        _, cost, node, parent = heapq.heappop(frontier)
+        if node in came_from:
+            continue
+        came_from[node] = parent
+        if node == goal:
+            break
+        for nxt, weight in neighbors(node):
+            new_cost = cost + weight
+            if new_cost < best.get(nxt, float("inf")):
+                best[nxt] = new_cost
+                priority = new_cost + heuristic(nxt)
+                heapq.heappush(frontier, (priority, new_cost, nxt, node))
+
+    return came_from`;
+
+const unionFindCode = `class DSU:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [0] * n
+
+    def find(self, x):
+        while x != self.parent[x]:
+            self.parent[x] = self.parent[self.parent[x]]
+            x = self.parent[x]
+        return x
+
+    def union(self, a, b):
+        ra = self.find(a)
+        rb = self.find(b)
+        if ra == rb:
+            return False
+        if self.rank[ra] < self.rank[rb]:
+            ra, rb = rb, ra
+        self.parent[rb] = ra
+        if self.rank[ra] == self.rank[rb]:
+            self.rank[ra] += 1
+        return True`;
+
+const kruskalCode = `class DSU:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [0] * n
+
+    def find(self, x):
+        while x != self.parent[x]:
+            self.parent[x] = self.parent[self.parent[x]]
+            x = self.parent[x]
+        return x
+
+    def union(self, a, b):
+        ra = self.find(a)
+        rb = self.find(b)
+        if ra == rb:
+            return False
+        if self.rank[ra] < self.rank[rb]:
+            ra, rb = rb, ra
+        self.parent[rb] = ra
+        if self.rank[ra] == self.rank[rb]:
+            self.rank[ra] += 1
+        return True
+
+def kruskal(n, edges):
+    edges.sort(key=lambda x: x[2])
+    dsu = DSU(n)
+    total = 0
+    mst = []
+
+    for u, v, w in edges:
+        if dsu.union(u, v):
+            total += w
+            mst.append((u, v, w))
+
+    return total, mst`;
+
+const primCode = `import heapq
+
+def prim(graph, start):
+    seen = {start}
+    heap = []
+    for v, w in graph[start]:
+        heapq.heappush(heap, (w, start, v))
+
+    total = 0
+    mst = []
+
+    while heap:
+        w, u, v = heapq.heappop(heap)
+        if v in seen:
+            continue
+        seen.add(v)
+        total += w
+        mst.append((u, v, w))
+        for nxt, weight in graph[v]:
+            if nxt not in seen:
+                heapq.heappush(heap, (weight, v, nxt))
+
+    return total, mst`;
+
+const kosarajuCode = `def kosaraju(nodes, edges):
+    graph = {n: [] for n in nodes}
+    rev = {n: [] for n in nodes}
+    for u, v in edges:
+        graph[u].append(v)
+        rev[v].append(u)
+
+    seen = set()
+    order = []
+
+    def dfs(u):
+        seen.add(u)
+        for v in graph[u]:
+            if v not in seen:
+                dfs(v)
+        order.append(u)
+
+    for n in nodes:
+        if n not in seen:
+            dfs(n)
+
+    comps = []
+    seen.clear()
+
+    def dfs_rev(u, comp):
+        seen.add(u)
+        comp.append(u)
+        for v in rev[u]:
+            if v not in seen:
+                dfs_rev(v, comp)
+
+    for n in reversed(order):
+        if n not in seen:
+            comp = []
+            dfs_rev(n, comp)
+            comps.append(comp)
+
+    return comps`;
+
+const bridgesArticulationCode = `def bridges_and_articulation(graph):
+    timer = 0
+    disc = {}
+    low = {}
+    parent = {}
+    bridges = []
+    points = set()
+
+    def dfs(u):
+        nonlocal timer
+        timer += 1
+        disc[u] = low[u] = timer
+        child_count = 0
+
+        for v in graph[u]:
+            if v not in disc:
+                parent[v] = u
+                child_count += 1
+                dfs(v)
+                low[u] = min(low[u], low[v])
+
+                if low[v] > disc[u]:
+                    bridges.append((u, v))
+                if parent.get(u) is None and child_count > 1:
+                    points.add(u)
+                if parent.get(u) is not None and low[v] >= disc[u]:
+                    points.add(u)
+            elif parent.get(u) != v:
+                low[u] = min(low[u], disc[v])
+
+    for u in graph:
+        if u not in disc:
+            parent[u] = None
+            dfs(u)
+
+    return bridges, points`;
+
+const eulerianPathCode = `def eulerian_path(graph, start):
+    stack = [start]
+    path = []
+    local = {u: list(vs) for u, vs in graph.items()}
+
+    while stack:
+        node = stack[-1]
+        if local[node]:
+            stack.append(local[node].pop())
+        else:
+            path.append(stack.pop())
+
+    return path[::-1]`;
+
+const edmondsKarpCode = `from collections import deque
+
+def edmonds_karp(n, edges, s, t):
+    graph = [[] for _ in range(n)]
+    cap = {}
+
+    for u, v, c in edges:
+        graph[u].append(v)
+        graph[v].append(u)
+        cap[(u, v)] = cap.get((u, v), 0) + c
+        cap[(v, u)] = cap.get((v, u), 0)
+
+    flow = 0
+
+    while True:
+        parent = [-1] * n
+        parent[s] = s
+        q = deque([s])
+
+        while q and parent[t] == -1:
+            u = q.popleft()
+            for v in graph[u]:
+                if parent[v] == -1 and cap[(u, v)] > 0:
+                    parent[v] = u
+                    q.append(v)
+
+        if parent[t] == -1:
+            break
+
+        bottleneck = float("inf")
+        v = t
+        while v != s:
+            u = parent[v]
+            bottleneck = min(bottleneck, cap[(u, v)])
+            v = u
+
+        v = t
+        while v != s:
+            u = parent[v]
+            cap[(u, v)] -= bottleneck
+            cap[(v, u)] += bottleneck
+            v = u
+
+        flow += bottleneck
+
+    return flow`;
+
+const bipartiteMatchingCode = `def max_bipartite_matching(left_nodes, graph):
+    match_right = {}
+
+    def dfs(u, seen):
+        for v in graph.get(u, []):
+            if v in seen:
+                continue
+            seen.add(v)
+            if v not in match_right or dfs(match_right[v], seen):
+                match_right[v] = u
+                return True
+        return False
+
+    matched = 0
+    for u in left_nodes:
+        if dfs(u, set()):
+            matched += 1
+
+    return matched`;
 
 const backtrackingCode = `def backtrack(path, choices, is_valid, on_solution):
     if on_solution(path):
@@ -653,6 +1032,365 @@ const algorithms = [
     pythonCode: dfsGraphCode,
     exampleProblems: ["Number of Islands", "Clone Graph", "Path Sum"],
   },
+  {
+    slug: "topological-sort",
+    title: "Topological Sort",
+    summary: "Order a DAG by dependencies.",
+    kind: "algorithm",
+    description:
+      "Topological sort orders nodes so every directed edge goes from earlier to later. It is built from in-degrees or DFS finish times.",
+    sections: [
+      {
+        title: "Key steps",
+        items: ["compute in-degrees", "enqueue zero in-degree nodes", "peel nodes in order"],
+      },
+      {
+        title: "When to use",
+        items: ["dependency ordering", "DAG scheduling", "cycle detection in DAGs"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["graph must be a DAG", "missing zero in-degree nodes in disconnected DAGs"],
+      },
+    ],
+    complexity: { time: "O(V + E)", space: "O(V)" },
+    pythonCode: topoSortCode,
+    exampleProblems: ["Course Schedule II", "Alien Dictionary", "Build Order"],
+  },
+  {
+    slug: "dijkstra",
+    title: "Dijkstra's Algorithm",
+    summary: "Shortest paths with non-negative weights.",
+    kind: "algorithm",
+    description:
+      "Dijkstra repeatedly picks the closest unsettled node and relaxes its outgoing edges using a min-heap.",
+    sections: [
+      { title: "Key steps", items: ["init distances", "pop closest node", "relax edges + update heap"] },
+      { title: "When to use", items: ["non-negative weights", "single-source shortest paths"] },
+      { title: "Pitfalls", items: ["negative weights break correctness", "skip stale heap entries"] },
+    ],
+    complexity: { time: "O((V + E) log V)", space: "O(V + E)" },
+    pythonCode: dijkstraCode,
+    exampleProblems: ["Network Delay Time", "Path With Minimum Effort", "Swim in Rising Water"],
+  },
+  {
+    slug: "bellman-ford",
+    title: "Bellman-Ford",
+    summary: "Shortest paths with negative edges.",
+    kind: "algorithm",
+    description:
+      "Bellman-Ford relaxes all edges V-1 times and can detect negative cycles with an extra pass.",
+    sections: [
+      { title: "Key steps", items: ["initialize distances", "relax all edges V-1 times", "check for cycles"] },
+      { title: "When to use", items: ["negative weights", "cycle detection", "small graphs"] },
+      { title: "Pitfalls", items: ["slow for large graphs", "unreachable nodes stay inf"] },
+    ],
+    complexity: { time: "O(V * E)", space: "O(V)" },
+    pythonCode: bellmanFordCode,
+    exampleProblems: ["Cheapest Flights Within K Stops", "Detect Negative Cycle", "Currency Arbitrage"],
+  },
+  {
+    slug: "floyd-warshall",
+    title: "Floyd-Warshall",
+    summary: "All-pairs shortest paths.",
+    kind: "algorithm",
+    description:
+      "Dynamic programming over intermediate nodes updates a distance matrix for every pair of vertices.",
+    sections: [
+      { title: "Key steps", items: ["init distance matrix", "try each intermediate k", "update all pairs"] },
+      { title: "When to use", items: ["many shortest-path queries", "dense graphs"] },
+      { title: "Pitfalls", items: ["O(V^3) time is steep", "O(V^2) memory"] },
+    ],
+    complexity: { time: "O(V^3)", space: "O(V^2)" },
+    pythonCode: floydWarshallCode,
+    exampleProblems: ["Find the City With the Smallest Number of Neighbors", "All-Pairs Shortest Path"],
+  },
+  {
+    slug: "a-star",
+    title: "A* Search",
+    summary: "Heuristic-guided shortest path.",
+    kind: "algorithm",
+    description:
+      "A* uses cost-so-far plus a heuristic to prioritize nodes that appear closest to the goal.",
+    sections: [
+      { title: "Key steps", items: ["push start with heuristic", "pop lowest f = g + h", "relax neighbors"] },
+      { title: "When to use", items: ["grid or map pathfinding", "admissible heuristics available"] },
+      { title: "Pitfalls", items: ["inadmissible heuristic breaks optimality", "track visited states carefully"] },
+    ],
+    complexity: { time: "O(E log V) typical", space: "O(V)" },
+    pythonCode: aStarCode,
+    exampleProblems: ["Shortest Path in Grid With Obstacles", "Navigation on Maps"],
+  },
+  {
+    slug: "union-find",
+    title: "Union-Find (Disjoint Set Union)",
+    summary: "Track connected components under unions.",
+    kind: "algorithm",
+    description:
+      "Union-find supports near-constant time find/union with path compression and union by rank.",
+    sections: [
+      { title: "Key steps", items: ["find root with compression", "union by rank/size", "check connectivity"] },
+      { title: "When to use", items: ["connectivity queries", "cycle detection", "Kruskal's MST"] },
+      { title: "Pitfalls", items: ["forgetting compression", "not normalizing indices"] },
+    ],
+    complexity: { time: "Amortized O(alpha(n))", space: "O(n)" },
+    pythonCode: unionFindCode,
+    exampleProblems: ["Number of Provinces", "Redundant Connection", "Accounts Merge"],
+  },
+  {
+    slug: "kruskal",
+    title: "Kruskal's MST",
+    summary: "Build an MST by sorting edges.",
+    kind: "algorithm",
+    description:
+      "Kruskal adds edges in ascending weight order, skipping those that form cycles via union-find.",
+    sections: [
+      { title: "Key steps", items: ["sort edges by weight", "union endpoints", "skip cycles"] },
+      { title: "When to use", items: ["sparse graphs", "edge list available"] },
+      { title: "Pitfalls", items: ["disconnected graph yields a forest", "need union-find"] },
+    ],
+    complexity: { time: "O(E log E)", space: "O(V)" },
+    pythonCode: kruskalCode,
+    exampleProblems: ["Minimum Spanning Tree", "Connecting Cities With Minimum Cost", "Min Cost to Connect Points"],
+  },
+  {
+    slug: "prim",
+    title: "Prim's MST",
+    summary: "Grow an MST from a start node.",
+    kind: "algorithm",
+    description:
+      "Prim expands the tree by always taking the cheapest edge that connects a new node to the MST.",
+    sections: [
+      { title: "Key steps", items: ["start from any node", "push outgoing edges", "take cheapest edge"] },
+      { title: "When to use", items: ["dense graphs", "adjacency list with weights"] },
+      { title: "Pitfalls", items: ["forgetting to skip visited nodes", "need a min-heap"] },
+    ],
+    complexity: { time: "O(E log V)", space: "O(V + E)" },
+    pythonCode: primCode,
+    exampleProblems: ["Minimum Spanning Tree", "Optimize Water Distribution", "Min Cost to Connect Points"],
+  },
+  {
+    slug: "strongly-connected-components",
+    title: "Strongly Connected Components (Kosaraju)",
+    summary: "Group mutually reachable nodes in a directed graph.",
+    kind: "algorithm",
+    description:
+      "Kosaraju orders nodes by finish time, then runs DFS on the reversed graph to extract components.",
+    sections: [
+      { title: "Key steps", items: ["DFS for finish order", "reverse edges", "DFS in reverse order"] },
+      { title: "When to use", items: ["directed graph condensation", "2-SAT", "cycle grouping"] },
+      { title: "Pitfalls", items: ["forgetting to reverse edges", "reusing seen set"] },
+    ],
+    complexity: { time: "O(V + E)", space: "O(V + E)" },
+    pythonCode: kosarajuCode,
+    exampleProblems: ["Strongly Connected Components", "2-SAT", "Find Cycles in Directed Graph"],
+  },
+  {
+    slug: "bridges-articulation",
+    title: "Bridges & Articulation Points",
+    summary: "Find critical edges and vertices.",
+    kind: "algorithm",
+    description:
+      "DFS with discovery and low-link values identifies edges or vertices whose removal disconnects the graph.",
+    sections: [
+      { title: "Key steps", items: ["DFS with timestamps", "track low-link values", "check bridge/vertex rules"] },
+      { title: "When to use", items: ["network reliability", "critical connections", "graph vulnerability"] },
+      { title: "Pitfalls", items: ["root articulation special case", "undirected graph only"] },
+    ],
+    complexity: { time: "O(V + E)", space: "O(V)" },
+    pythonCode: bridgesArticulationCode,
+    exampleProblems: ["Critical Connections in a Network", "Articulation Points", "Bridge Edges"],
+  },
+  {
+    slug: "eulerian-path",
+    title: "Eulerian Path/Circuit",
+    summary: "Traverse every edge exactly once.",
+    kind: "algorithm",
+    description:
+      "Hierholzer's algorithm constructs an Eulerian path or circuit after verifying degree conditions.",
+    sections: [
+      { title: "Key steps", items: ["check degree conditions", "walk edges with stack", "splice cycles"] },
+      { title: "When to use", items: ["route planning", "trail reconstruction", "edge-visit constraints"] },
+      { title: "Pitfalls", items: ["directed vs undirected rules", "graph must be connected on edges"] },
+    ],
+    complexity: { time: "O(V + E)", space: "O(V + E)" },
+    pythonCode: eulerianPathCode,
+    exampleProblems: ["Reconstruct Itinerary", "Valid Arrangement of Pairs", "Eulerian Path"],
+  },
+  {
+    slug: "max-flow",
+    title: "Max Flow (Edmonds-Karp)",
+    summary: "Find the maximum flow in a network.",
+    kind: "algorithm",
+    description:
+      "Edmonds-Karp repeatedly finds shortest augmenting paths with BFS in the residual graph.",
+    sections: [
+      { title: "Key steps", items: ["build residual graph", "BFS for augmenting path", "update capacities"] },
+      { title: "When to use", items: ["capacity constraints", "min cut", "flow networks"] },
+      { title: "Pitfalls", items: ["slow on dense graphs", "need residual edges both ways"] },
+    ],
+    complexity: { time: "O(V * E^2)", space: "O(V + E)" },
+    pythonCode: edmondsKarpCode,
+    exampleProblems: ["Maximum Flow", "Min Cut", "Project Selection"],
+  },
+  {
+    slug: "bipartite-matching",
+    title: "Bipartite Matching (Kuhn)",
+    summary: "Match nodes across two partitions.",
+    kind: "algorithm",
+    description:
+      "Find augmenting paths from each left node to increase the size of the matching.",
+    sections: [
+      { title: "Key steps", items: ["try each left node", "DFS to find augmenting path", "flip matches"] },
+      { title: "When to use", items: ["assignment problems", "pairing constraints", "scheduling"] },
+      { title: "Pitfalls", items: ["reset visited per DFS", "ensure graph is bipartite"] },
+    ],
+    complexity: { time: "O(V * E)", space: "O(V + E)" },
+    pythonCode: bipartiteMatchingCode,
+    exampleProblems: ["Maximum Bipartite Matching", "Assign Tasks to Workers", "Minimum Vertex Cover"],
+  },
+  {
+    slug: "dynamic-programming",
+    title: "Dynamic Programming (FAST Method)",
+    summary: "Store repeated work; build solutions with the FAST method.",
+    kind: "algorithm",
+    description:
+      "Dynamic programming stores repeated computations to avoid recomputation, trading space for time. The FAST method is a repeatable way to move from a brute-force recursive solution to an optimal DP solution.",
+    sections: [
+      {
+        title: "FAST: First solution",
+        items: [
+          "write the brute-force recursive solution",
+          "ignore efficiency; aim for correctness",
+          "keep recursive calls self-contained (no globals)",
+          "avoid tail recursion; combine results after calls",
+          "pass only necessary parameters",
+        ],
+      },
+      {
+        title: "FAST: Analyze",
+        items: [
+          "compute time and space complexity",
+          "confirm optimal substructure",
+          "check for overlapping subproblems (try a medium input)",
+        ],
+      },
+      {
+        title: "FAST: Find subproblems",
+        items: [
+          "define the meaning of each subproblem",
+          "memoize overlapping results",
+          "top-down solutions clarify the state",
+        ],
+      },
+      {
+        title: "FAST: Turn the solution around",
+        items: [
+          "convert to bottom-up iteration",
+          "build from base cases",
+          "compute successive subproblems to the target",
+        ],
+      },
+      {
+        title: "Key terms",
+        items: [
+          "recursion fundamentals first",
+          "top-down = recursion + memoization",
+          "bottom-up = iterative tabulation",
+          "overlapping subproblems + optimal substructure",
+        ],
+      },
+    ],
+    complexity: { time: "Depends on states and transitions", space: "O(states)" },
+    pythonCode: dynamicProgrammingCode,
+    exampleProblems: [
+      "Fibonacci Numbers",
+      "Making Change",
+      "Square Submatrix",
+      "0-1 Knapsack",
+      "Target Sum",
+    ],
+  },
+  {
+    slug: "fibonacci",
+    title: "Fibonacci Numbers",
+    summary: "Build a sequence from two previous values.",
+    kind: "algorithm",
+    description:
+      "Each term is the sum of the two before it. Dynamic programming turns the recursive definition into an iterative linear pass.",
+    sections: [
+      { title: "Key steps", items: ["use base cases for 0 and 1", "iterate from 2..n", "carry two variables"] },
+      { title: "When to use", items: ["warm-up DP", "recurrence practice", "similar linear recurrences"] },
+      { title: "Pitfalls", items: ["off-by-one on n", "overflow for large n"] },
+    ],
+    complexity: { time: "O(n)", space: "O(1)" },
+    pythonCode: fibonacciCode,
+    exampleProblems: ["Fibonacci Number", "Climbing Stairs", "House Robber"],
+  },
+  {
+    slug: "coin-change",
+    title: "Coin Change (Min Coins)",
+    summary: "Find the fewest coins to reach a target amount.",
+    kind: "algorithm",
+    description:
+      "Use a 1D DP array where dp[a] is the minimum coins to make amount a, relaxing each coin across the amounts.",
+    sections: [
+      { title: "Key steps", items: ["initialize dp with inf, dp[0] = 0", "iterate coins", "relax dp[amount]"] },
+      { title: "When to use", items: ["unbounded knapsack", "minimizing counts", "canonical coin sets"] },
+      { title: "Pitfalls", items: ["forgetting impossible case", "wrong loop order for unbounded use"] },
+    ],
+    complexity: { time: "O(amount * coins)", space: "O(amount)" },
+    pythonCode: coinChangeCode,
+    exampleProblems: ["Coin Change", "Minimum Coins to Make Change", "Perfect Squares"],
+  },
+  {
+    slug: "square-submatrix",
+    title: "Square Submatrix",
+    summary: "Find the largest all-1 square in a matrix.",
+    kind: "algorithm",
+    description:
+      "DP tracks the largest square ending at each cell using the minimum of top, left, and diagonal neighbors.",
+    sections: [
+      { title: "Key steps", items: ["dp cell = 1 + min(top, left, diag)", "track global max", "handle borders"] },
+      { title: "When to use", items: ["binary matrix", "largest square or area", "image/grid problems"] },
+      { title: "Pitfalls", items: ["not handling first row/col", "treating strings as ints"] },
+    ],
+    complexity: { time: "O(R * C)", space: "O(R * C)" },
+    pythonCode: squareSubmatrixCode,
+    exampleProblems: ["Maximal Square", "Largest Square of 1s"],
+  },
+  {
+    slug: "target-sum",
+    title: "Target Sum",
+    summary: "Count ways to assign +/- to reach a target.",
+    kind: "algorithm",
+    description:
+      "Iteratively build a map of possible sums and counts by adding and subtracting each number.",
+    sections: [
+      { title: "Key steps", items: ["start with {0:1}", "update sums for +x and -x", "read dp[target]"] },
+      { title: "When to use", items: ["sign assignment", "subset sum variants", "counting combinations"] },
+      { title: "Pitfalls", items: ["forgetting multiplicities", "large sum range without pruning"] },
+    ],
+    complexity: { time: "O(n * S)", space: "O(S)" },
+    pythonCode: targetSumCode,
+    exampleProblems: ["Target Sum", "Assign Signs", "Subset Sum Count"],
+  },
+  {
+    slug: "zero-one-knapsack",
+    title: "0/1 Knapsack",
+    summary: "Pick items once to maximize value under capacity.",
+    kind: "algorithm",
+    description:
+      "Process each item once, updating capacities backward so each item is used at most once.",
+    sections: [
+      { title: "Key steps", items: ["dp by capacity", "loop items", "iterate capacity backward"] },
+      { title: "When to use", items: ["choose or skip each item", "subset selection", "budgeted optimization"] },
+      { title: "Pitfalls", items: ["iterating capacity forward", "mixing weights and values"] },
+    ],
+    complexity: { time: "O(n * C)", space: "O(C)" },
+    pythonCode: knapsackCode,
+    exampleProblems: ["0/1 Knapsack", "Partition Equal Subset Sum", "Last Stone Weight II"],
+  },
 ];
 
 const patterns = [
@@ -889,19 +1627,249 @@ const baseTraversalGraph = {
   start: "A",
 };
 
+const baseTraversalLayout = {
+  directed: true,
+  nodeRadius: 7,
+  nodes: [
+    { id: "A", x: 50, y: 10 },
+    { id: "B", x: 20, y: 35 },
+    { id: "C", x: 80, y: 35 },
+    { id: "D", x: 10, y: 60 },
+    { id: "E", x: 40, y: 60 },
+    { id: "F", x: 90, y: 60 },
+    { id: "G", x: 50, y: 85 },
+  ],
+  edges: [
+    { from: "A", to: "B" },
+    { from: "A", to: "C" },
+    { from: "B", to: "D" },
+    { from: "B", to: "E" },
+    { from: "C", to: "F" },
+    { from: "D", to: "G" },
+    { from: "E", to: "G" },
+    { from: "F", to: "G" },
+  ],
+};
+
+const topoLayout = {
+  directed: true,
+  nodeRadius: 7,
+  nodes: [
+    { id: "A", x: 15, y: 20 },
+    { id: "B", x: 50, y: 10 },
+    { id: "C", x: 85, y: 20 },
+    { id: "D", x: 25, y: 60 },
+    { id: "E", x: 60, y: 60 },
+    { id: "F", x: 85, y: 80 },
+  ],
+  edges: [
+    { from: "A", to: "D" },
+    { from: "A", to: "E" },
+    { from: "B", to: "E" },
+    { from: "C", to: "F" },
+    { from: "D", to: "F" },
+    { from: "E", to: "F" },
+  ],
+};
+
+const weightedGraphLayout = {
+  directed: false,
+  nodeRadius: 7,
+  nodes: [
+    { id: "A", x: 15, y: 20 },
+    { id: "B", x: 50, y: 10 },
+    { id: "C", x: 85, y: 25 },
+    { id: "D", x: 30, y: 70 },
+    { id: "E", x: 70, y: 75 },
+  ],
+  edges: [
+    { from: "A", to: "B", weight: 2 },
+    { from: "A", to: "D", weight: 6 },
+    { from: "B", to: "C", weight: 3 },
+    { from: "B", to: "D", weight: 8 },
+    { from: "B", to: "E", weight: 5 },
+    { from: "C", to: "E", weight: 7 },
+    { from: "D", to: "E", weight: 2 },
+  ],
+};
+
+const bellmanFordLayout = {
+  directed: true,
+  nodeRadius: 7,
+  nodes: [
+    { id: "S", x: 10, y: 50 },
+    { id: "A", x: 35, y: 20 },
+    { id: "B", x: 35, y: 80 },
+    { id: "C", x: 65, y: 30 },
+    { id: "D", x: 85, y: 60 },
+  ],
+  edges: [
+    { from: "S", to: "A", weight: 4 },
+    { from: "S", to: "B", weight: 5 },
+    { from: "A", to: "C", weight: -3 },
+    { from: "B", to: "C", weight: 6 },
+    { from: "A", to: "D", weight: 5 },
+    { from: "B", to: "D", weight: 2 },
+    { from: "C", to: "D", weight: 2 },
+  ],
+};
+
+const floydWarshallLayout = {
+  directed: true,
+  nodeRadius: 7,
+  nodes: [
+    { id: "A", x: 20, y: 20 },
+    { id: "B", x: 80, y: 20 },
+    { id: "C", x: 20, y: 80 },
+    { id: "D", x: 80, y: 80 },
+  ],
+  edges: [
+    { from: "A", to: "B", weight: 3 },
+    { from: "A", to: "C", weight: 7 },
+    { from: "B", to: "D", weight: 2 },
+    { from: "C", to: "D", weight: 1 },
+    { from: "B", to: "C", weight: 2 },
+  ],
+};
+
+const unionFindLayout = {
+  directed: false,
+  nodeRadius: 7,
+  nodes: [
+    { id: "1", x: 10, y: 50 },
+    { id: "2", x: 25, y: 50 },
+    { id: "3", x: 40, y: 50 },
+    { id: "4", x: 55, y: 50 },
+    { id: "5", x: 70, y: 50 },
+    { id: "6", x: 85, y: 50 },
+  ],
+  edges: [
+    { from: "1", to: "2" },
+    { from: "2", to: "3" },
+    { from: "4", to: "5" },
+    { from: "3", to: "5" },
+    { from: "6", to: "2" },
+  ],
+};
+
+const sccLayout = {
+  directed: true,
+  nodeRadius: 7,
+  nodes: [
+    { id: "A", x: 20, y: 30 },
+    { id: "B", x: 50, y: 15 },
+    { id: "C", x: 80, y: 30 },
+    { id: "D", x: 35, y: 75 },
+    { id: "E", x: 70, y: 80 },
+  ],
+  edges: [
+    { from: "A", to: "B" },
+    { from: "B", to: "C" },
+    { from: "C", to: "A" },
+    { from: "B", to: "D" },
+    { from: "D", to: "E" },
+    { from: "E", to: "D" },
+  ],
+};
+
+const bridgesLayout = {
+  directed: false,
+  nodeRadius: 7,
+  nodes: [
+    { id: "A", x: 15, y: 40 },
+    { id: "B", x: 35, y: 20 },
+    { id: "C", x: 55, y: 40 },
+    { id: "D", x: 75, y: 20 },
+    { id: "E", x: 85, y: 55 },
+    { id: "F", x: 35, y: 75 },
+  ],
+  edges: [
+    { from: "A", to: "B" },
+    { from: "B", to: "C" },
+    { from: "C", to: "D" },
+    { from: "D", to: "E" },
+    { from: "C", to: "E" },
+    { from: "C", to: "F" },
+  ],
+};
+
+const eulerianLayout = {
+  directed: false,
+  nodeRadius: 7,
+  nodes: [
+    { id: "A", x: 25, y: 35 },
+    { id: "B", x: 60, y: 20 },
+    { id: "C", x: 75, y: 60 },
+    { id: "D", x: 30, y: 75 },
+  ],
+  edges: [
+    { from: "A", to: "B" },
+    { from: "B", to: "C" },
+    { from: "C", to: "A" },
+    { from: "C", to: "D" },
+  ],
+};
+
+const maxFlowLayout = {
+  directed: true,
+  nodeRadius: 7,
+  nodes: [
+    { id: "S", x: 10, y: 50 },
+    { id: "A", x: 40, y: 20 },
+    { id: "B", x: 40, y: 80 },
+    { id: "T", x: 90, y: 50 },
+  ],
+  edges: [
+    { from: "S", to: "A", weight: 3 },
+    { from: "S", to: "B", weight: 2 },
+    { from: "A", to: "B", weight: 1 },
+    { from: "A", to: "T", weight: 2 },
+    { from: "B", to: "T", weight: 3 },
+  ],
+};
+
+const bipartiteLayout = {
+  directed: false,
+  nodeRadius: 7,
+  nodes: [
+    { id: "L1", x: 20, y: 20 },
+    { id: "L2", x: 20, y: 50 },
+    { id: "L3", x: 20, y: 80 },
+    { id: "R1", x: 80, y: 20 },
+    { id: "R2", x: 80, y: 50 },
+    { id: "R3", x: 80, y: 80 },
+  ],
+  edges: [
+    { from: "L1", to: "R1" },
+    { from: "L1", to: "R2" },
+    { from: "L2", to: "R1" },
+    { from: "L2", to: "R3" },
+    { from: "L3", to: "R2" },
+    { from: "L3", to: "R3" },
+  ],
+};
+
 const bfsSimulation = {
   title: "BFS traversal",
   description: "Visit nodes level by level using a queue.",
+  goal: "Visit all reachable nodes from the start in level order.",
+  inputs: ["Directed graph with adjacency list", "Start node A"],
   type: "graph-traversal",
   mode: "bfs",
+  visual: "graph",
+  graph: baseTraversalLayout,
   ...baseTraversalGraph,
 };
 
 const dfsSimulation = {
   title: "DFS traversal",
   description: "Go deep before backtracking with a stack.",
+  goal: "Visit all reachable nodes from the start in depth-first order.",
+  inputs: ["Directed graph with adjacency list", "Start node A"],
   type: "graph-traversal",
   mode: "dfs",
+  visual: "graph",
+  graph: baseTraversalLayout,
   ...baseTraversalGraph,
 };
 
@@ -909,6 +1877,8 @@ const simulationConfigs = {
   "sliding-window": {
     title: "Max sum window",
     description: "Find the max sum of any 3 consecutive elements.",
+    goal: "Return the maximum sum of any window of size 3.",
+    inputs: ["Array: [2, 1, 5, 1, 3, 2, 9, 7]", "Window size: 3"],
     type: "sliding-window",
     array: [2, 1, 5, 1, 3, 2, 9, 7],
     windowSize: 3,
@@ -916,6 +1886,8 @@ const simulationConfigs = {
   "two-pointers": {
     title: "Two sum (sorted)",
     description: "Move pointers inward to hit the target sum.",
+    goal: "Find indices whose values sum to the target.",
+    inputs: ["Sorted array: [1, 2, 3, 4, 6, 8, 11]", "Target sum: 10"],
     type: "two-pointers",
     array: [1, 2, 3, 4, 6, 8, 11],
     target: 10,
@@ -923,6 +1895,8 @@ const simulationConfigs = {
   "modified-binary-search": {
     title: "Binary search",
     description: "Halve the search range until the target is found.",
+    goal: "Locate the target value in a sorted array.",
+    inputs: ["Sorted array: [1..9]", "Target value: 6"],
     type: "binary-search",
     array: [1, 2, 3, 4, 5, 6, 7, 8, 9],
     target: 6,
@@ -930,18 +1904,24 @@ const simulationConfigs = {
   "cyclic-sort": {
     title: "Cyclic swap",
     description: "Swap each value into its correct index.",
+    goal: "Place each value at index value-1 using swaps.",
+    inputs: ["Array: [3, 1, 5, 4, 2]"],
     type: "cyclic-sort",
     array: [3, 1, 5, 4, 2],
   },
   "merge-sort": {
     title: "Merge sort",
     description: "Split, then merge sorted halves.",
+    goal: "Sort the array using divide and conquer merges.",
+    inputs: ["Array: [7, 2, 5, 3, 1, 6, 4]"],
     type: "merge-sort",
     array: [7, 2, 5, 3, 1, 6, 4],
   },
   "quick-sort": {
     title: "Quick sort",
     description: "Partition around a pivot and recurse.",
+    goal: "Sort the array in-place using pivot partitions.",
+    inputs: ["Array: [7, 2, 5, 3, 1, 6, 4]"],
     type: "quick-sort",
     array: [7, 2, 5, 3, 1, 6, 4],
   },
@@ -950,7 +1930,11 @@ const simulationConfigs = {
   "topological-sort": {
     title: "Topological order",
     description: "Peel off zero in-degree nodes to form a valid ordering.",
+    goal: "Return a valid ordering of tasks in a DAG.",
+    inputs: ["Nodes: A..F", "Directed edges list", "Graph is a DAG"],
     type: "topological-sort",
+    visual: "graph",
+    graph: topoLayout,
     nodes: ["A", "B", "C", "D", "E", "F"],
     edges: [
       ["A", "D"],
@@ -964,12 +1948,16 @@ const simulationConfigs = {
   "two-heaps": {
     title: "Streaming median",
     description: "Balance two heaps as numbers arrive.",
+    goal: "Track the median after each insertion.",
+    inputs: ["Stream: [5, 2, 10, 3, 8, 1]"],
     type: "two-heaps",
     stream: [5, 2, 10, 3, 8, 1],
   },
   "linear-search": {
     title: "Linear scan",
     description: "Check each value until the target is found.",
+    goal: "Return the index of the target if present.",
+    inputs: ["Array: [4, 1, 7, 3, 9, 2]", "Target: 9"],
     type: "linear-search",
     array: [4, 1, 7, 3, 9, 2],
     target: 9,
@@ -977,9 +1965,199 @@ const simulationConfigs = {
   "binary-search": {
     title: "Binary search",
     description: "Halve the search range until the target is found.",
+    goal: "Return the index of the target in a sorted array.",
+    inputs: ["Sorted array: [1..9]", "Target: 6"],
     type: "binary-search",
     array: [1, 2, 3, 4, 5, 6, 7, 8, 9],
     target: 6,
+  },
+  dijkstra: {
+    title: "Shortest paths",
+    description: "Relax edges using a min-priority frontier.",
+    goal: "Compute the shortest distance from A to every node.",
+    inputs: ["Weighted graph (non-negative)", "Start node A"],
+    type: "dijkstra",
+    visual: "graph",
+    graph: weightedGraphLayout,
+    start: "A",
+  },
+  "bellman-ford": {
+    title: "Relax all edges",
+    description: "Iteratively relax every edge to allow negative weights.",
+    goal: "Compute shortest distances from S with possible negative edges.",
+    inputs: ["Directed weighted graph", "Start node S"],
+    type: "bellman-ford",
+    visual: "graph",
+    graph: bellmanFordLayout,
+    start: "S",
+  },
+  "floyd-warshall": {
+    title: "All-pairs distances",
+    description: "Update the matrix with each intermediate node.",
+    goal: "Compute shortest paths between every pair of nodes.",
+    inputs: ["Directed weighted graph", "Distance matrix initialized"],
+    type: "floyd-warshall",
+    visual: "graph+matrix",
+    graph: floydWarshallLayout,
+  },
+  "a-star": {
+    title: "Heuristic search",
+    description: "Pick the lowest f = g + h to guide the search.",
+    goal: "Find a low-cost path from A to E using a heuristic.",
+    inputs: ["Weighted graph", "Start A, Goal E", "Admissible heuristic"],
+    type: "a-star",
+    visual: "graph",
+    graph: weightedGraphLayout,
+    start: "A",
+    goal: "E",
+  },
+  "union-find": {
+    title: "Union operations",
+    description: "Merge sets while tracking components.",
+    goal: "Track connected components after each union.",
+    inputs: ["Nodes 1..6", "Union operations list"],
+    type: "union-find",
+    visual: "graph",
+    graph: unionFindLayout,
+    operations: [
+      ["1", "2"],
+      ["2", "3"],
+      ["4", "5"],
+      ["3", "5"],
+      ["6", "2"],
+    ],
+  },
+  kruskal: {
+    title: "MST via sorted edges",
+    description: "Add the cheapest edge that does not form a cycle.",
+    goal: "Build a minimum spanning tree by edge sorting.",
+    inputs: ["Undirected weighted graph"],
+    type: "kruskal",
+    visual: "graph",
+    graph: weightedGraphLayout,
+  },
+  prim: {
+    title: "MST via growing frontier",
+    description: "Expand the tree with the cheapest outgoing edge.",
+    goal: "Build a minimum spanning tree from a start node.",
+    inputs: ["Undirected weighted graph", "Start node A"],
+    type: "prim",
+    visual: "graph",
+    graph: weightedGraphLayout,
+    start: "A",
+  },
+  "strongly-connected-components": {
+    title: "SCCs (Kosaraju)",
+    description: "Run DFS order then reverse-graph DFS to group nodes.",
+    goal: "Group nodes that are mutually reachable.",
+    inputs: ["Directed graph"],
+    type: "scc",
+    visual: "graph",
+    graph: sccLayout,
+  },
+  "bridges-articulation": {
+    title: "Critical edges and nodes",
+    description: "Track discovery/low links to find bridges.",
+    goal: "Identify edges whose removal disconnects the graph.",
+    inputs: ["Undirected graph"],
+    type: "bridges-articulation",
+    visual: "graph",
+    graph: bridgesLayout,
+  },
+  "eulerian-path": {
+    title: "Eulerian trail",
+    description: "Walk edges once using a stack-based tour.",
+    goal: "Visit every edge exactly once.",
+    inputs: ["Undirected graph with Eulerian trail", "Start node D"],
+    type: "eulerian-path",
+    visual: "graph",
+    graph: eulerianLayout,
+    start: "D",
+  },
+  "max-flow": {
+    title: "Augmenting paths",
+    description: "Push flow until no path remains.",
+    goal: "Compute the maximum flow from S to T.",
+    inputs: ["Directed flow network with capacities", "Source S, Sink T"],
+    type: "max-flow",
+    visual: "graph",
+    graph: maxFlowLayout,
+    source: "S",
+    sink: "T",
+  },
+  "bipartite-matching": {
+    title: "Match left to right",
+    description: "Find augmenting paths to grow matches.",
+    goal: "Maximize the number of matched pairs.",
+    inputs: ["Bipartite graph", "Left nodes L1..L3"],
+    type: "bipartite-matching",
+    visual: "graph",
+    graph: bipartiteLayout,
+    leftNodes: ["L1", "L2", "L3"],
+  },
+  fibonacci: {
+    title: "DP array fill",
+    description: "Build the Fibonacci table from base cases.",
+    goal: "Compute the nth Fibonacci number via DP.",
+    inputs: ["n = 10", "Base cases: fib(0)=0, fib(1)=1"],
+    type: "dp-fibonacci",
+    visual: "dp-array",
+    n: 10,
+  },
+  "coin-change": {
+    title: "Min coins DP",
+    description: "Update dp[amount] using each coin.",
+    goal: "Compute the minimum coins needed for the amount.",
+    inputs: ["Amount: 12", "Coins: [1, 6, 10] (greedy fails here)"],
+    inputArray: [1, 6, 10],
+    type: "dp-coin-change",
+    visual: "dp-array",
+    amount: 12,
+    coins: [1, 6, 10],
+  },
+  "square-submatrix": {
+    title: "Maximal square DP",
+    description: "Grow squares from top/left/diag neighbors.",
+    goal: "Find the largest all-1 square submatrix.",
+    inputs: ["Binary matrix 3x4 (True/False)"],
+    type: "dp-square-submatrix",
+    visual: "dp-matrix",
+    inputMatrix: [
+      ["False", "True", "False", "False"],
+      ["True", "True", "True", "True"],
+      ["False", "True", "True", "False"],
+    ],
+    matrix: [
+      [0, 1, 0, 0],
+      [1, 1, 1, 1],
+      [0, 1, 1, 0],
+    ],
+  },
+  "target-sum": {
+    title: "Subset sum DP",
+    description: "Count ways to reach the transformed target.",
+    goal: "Count sign assignments that reach the target.",
+    inputs: ["Numbers: [1, 1, 1, 1, 1]", "Target: 3"],
+    inputArray: [1, 1, 1, 1, 1],
+    type: "dp-target-sum",
+    visual: "dp-array",
+    nums: [1, 1, 1, 1, 1],
+    target: 3,
+  },
+  "zero-one-knapsack": {
+    title: "Capacity DP",
+    description: "Update best value for each capacity.",
+    goal: "Maximize value without exceeding capacity.",
+    inputs: ["Weights: [2, 2, 3]", "Values: [6, 10, 12]", "Capacity: 5"],
+    inputArrays: [
+      { label: "Weights", values: [2, 2, 3] },
+      { label: "Values", values: [6, 10, 12] },
+    ],
+    type: "dp-knapsack",
+    visual: "dp-array",
+    weights: [2, 2, 3],
+    values: [6, 10, 12],
+    capacity: 5,
   },
   bfs: bfsSimulation,
   dfs: dfsSimulation,
@@ -991,6 +2169,16 @@ const escapeHtml = (value) =>
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/\"/g, "&quot;");
+
+const formatSimValue = (value) => {
+  if (value === Infinity) {
+    return "inf";
+  }
+  if (value === -Infinity) {
+    return "-inf";
+  }
+  return String(value);
+};
 
 const renderList = (items) => items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 
@@ -1034,6 +2222,24 @@ const renderSimulationPanel = (item) => {
     return "";
   }
 
+  const goalHtml = config.goal
+    ? `
+        <div>
+          <strong>Goal</strong>
+          <p>${escapeHtml(config.goal)}</p>
+        </div>
+      `
+    : "";
+  const inputsHtml = config.inputs?.length
+    ? `
+        <div>
+          <strong>Inputs</strong>
+          <ul class="sim-problem-list">${renderList(config.inputs)}</ul>
+        </div>
+      `
+    : "";
+  const problemHtml = goalHtml || inputsHtml ? `<div class="sim-problem">${goalHtml}${inputsHtml}</div>` : "";
+
   return `
     <section class="simulator" data-sim="${escapeHtml(item.slug)}">
       <div class="simulator-header">
@@ -1048,9 +2254,187 @@ const renderSimulationPanel = (item) => {
           <button class="sim-button accent" type="button" data-sim-action="play">Play</button>
         </div>
       </div>
+      ${problemHtml}
       <div class="simulator-track" data-sim-track></div>
       <div class="simulator-state" data-sim-state></div>
     </section>
+  `;
+};
+
+const edgeKey = (from, to, directed) => {
+  if (directed) {
+    return `${from}->${to}`;
+  }
+  return [from, to].sort().join("--");
+};
+
+const renderGraphCanvas = (graph, step) => {
+  const nodesById = new Map(graph.nodes.map((node) => [node.id, node]));
+  const directed = Boolean(graph.directed);
+  const selectedEdges = new Set(step.selectedEdges || []);
+  const mutedEdges = new Set(step.mutedEdges || []);
+  const activeKey = step.activeEdge ? edgeKey(step.activeEdge.from, step.activeEdge.to, directed) : null;
+  const nodeRadius = graph.nodeRadius ?? 7;
+  const offset = nodeRadius + 0.5;
+
+  const edgesHtml = graph.edges
+    .map((edge) => {
+      const from = nodesById.get(edge.from);
+      const to = nodesById.get(edge.to);
+      if (!from || !to) {
+        return "";
+      }
+      const key = edgeKey(edge.from, edge.to, directed);
+      const classes = ["sim-edge"];
+      if (key === activeKey) {
+        classes.push("is-active");
+      }
+      if (selectedEdges.has(key)) {
+        classes.push("is-selected");
+      }
+      if (mutedEdges.has(key)) {
+        classes.push("is-muted");
+      }
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      const length = Math.hypot(dx, dy) || 1;
+      const ox = (dx / length) * offset;
+      const oy = (dy / length) * offset;
+      const x1 = from.x + ox;
+      const y1 = from.y + oy;
+      const x2 = to.x - ox;
+      const y2 = to.y - oy;
+      const midX = (x1 + x2) / 2;
+      const midY = (y1 + y2) / 2;
+      const weightLabel = edge.weight !== undefined ? `<text class="sim-edge-weight" x="${midX}" y="${midY}">${escapeHtml(edge.weight)}</text>` : "";
+      const marker = directed ? 'marker-end="url(#sim-arrow)"' : "";
+
+      return `
+        <line class="${classes.join(" ")}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${marker} />
+        ${weightLabel}
+      `;
+    })
+    .join("");
+
+  const nodesHtml = graph.nodes
+    .map((node) => {
+      const classes = ["sim-node"];
+      if (step.visited?.includes(node.id)) {
+        classes.push("is-visited");
+      }
+      if (step.frontier?.includes(node.id)) {
+        classes.push("is-frontier");
+      }
+      if (step.selectedNodes?.includes(node.id)) {
+        classes.push("is-selected");
+      }
+      if (step.dependencyNodes?.includes(node.id)) {
+        classes.push("is-dependency");
+      }
+      if (step.activeNode === node.id) {
+        classes.push("is-active");
+      }
+
+      const label = step.nodeLabels?.[node.id];
+      const labelHtml = label !== undefined ? `<span class="sim-degree">${escapeHtml(label)}</span>` : "";
+
+      return `
+        <div class="sim-graph-node" style="left:${node.x}%; top:${node.y}%;">
+          <div class="${classes.join(" ")}">${escapeHtml(node.label ?? node.id)}</div>
+          ${labelHtml}
+        </div>
+      `;
+    })
+    .join("");
+
+  return `
+    <div class="sim-graph-canvas">
+      <svg class="sim-graph-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <marker id="sim-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto" markerUnits="strokeWidth">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"></path>
+          </marker>
+        </defs>
+        ${edgesHtml}
+      </svg>
+      ${nodesHtml}
+    </div>
+  `;
+};
+
+const renderDpArray = (step) => {
+  const values = step.dpArray || [];
+  const itemsHtml = values
+    .map((value, index) => {
+      const classes = ["sim-cell"];
+      if (step.baseIndices?.includes(index)) {
+        classes.push("is-base");
+      }
+      if (step.dependencies?.includes(index)) {
+        classes.push("is-dependency");
+      }
+      if (step.activeIndex === index) {
+        classes.push("is-active");
+      }
+
+      return `
+        <div class="sim-item">
+          <div class="${classes.join(" ")}">${escapeHtml(formatSimValue(value))}</div>
+          <span class="sim-index">${index}</span>
+        </div>
+      `;
+    })
+    .join("");
+
+  return `<div class="sim-array">${itemsHtml}</div>`;
+};
+
+const renderDpMatrix = (step) => {
+  const matrix = step.dpMatrix || [];
+  const rowsHtml = matrix
+    .map((row, rowIndex) => {
+      const cellsHtml = row
+        .map((value, colIndex) => {
+          const classes = ["sim-cell"];
+          if (step.baseCells?.some((cell) => cell.row === rowIndex && cell.col === colIndex)) {
+            classes.push("is-base");
+          }
+          if (step.dependencies?.some((cell) => cell.row === rowIndex && cell.col === colIndex)) {
+            classes.push("is-dependency");
+          }
+          if (step.activeCell?.row === rowIndex && step.activeCell?.col === colIndex) {
+            classes.push("is-active");
+          }
+          return `<div class="${classes.join(" ")}">${escapeHtml(formatSimValue(value))}</div>`;
+        })
+        .join("");
+
+      return `<div class="sim-matrix-row">${cellsHtml}</div>`;
+    })
+    .join("");
+
+  return `<div class="sim-matrix">${rowsHtml}</div>`;
+};
+
+const renderInputMatrix = (matrix) => renderDpMatrix({ dpMatrix: matrix });
+
+const renderStaticArray = (values, label) => {
+  const itemsHtml = values
+    .map((value, index) => {
+      return `
+        <div class="sim-item">
+          <div class="sim-cell">${escapeHtml(formatSimValue(value))}</div>
+          <span class="sim-index">${index}</span>
+        </div>
+      `;
+    })
+    .join("");
+
+  return `
+    <div>
+      <p class="eyebrow">${escapeHtml(label)}</p>
+      <div class="sim-array">${itemsHtml}</div>
+    </div>
   `;
 };
 
@@ -1441,6 +2825,7 @@ const buildGraphTraversalSteps = (config) => {
 
     steps.push({
       current,
+      activeNode: current,
       visited: Array.from(visited),
       frontier: [...frontier],
       order: [...order],
@@ -1483,9 +2868,14 @@ const buildTopologicalSortSteps = (config) => {
 
     steps.push({
       current,
+      activeNode: current,
       queue: [...queue],
       order: [...order],
       inDegree: { ...inDegree },
+      visited: [...order],
+      nodeLabels: Object.fromEntries(
+        Object.entries(inDegree).map(([node, degree]) => [node, `deg ${degree}`])
+      ),
     });
   }
 
@@ -1536,6 +2926,827 @@ const buildTwoHeapsSteps = (config) => {
   return steps;
 };
 
+const buildAdjacency = (graph) => {
+  const adjacency = {};
+  graph.nodes.forEach((node) => {
+    adjacency[node.id] = [];
+  });
+  graph.edges.forEach((edge) => {
+    adjacency[edge.from].push({ to: edge.to, weight: edge.weight ?? 1 });
+    if (!graph.directed) {
+      adjacency[edge.to].push({ to: edge.from, weight: edge.weight ?? 1 });
+    }
+  });
+  return adjacency;
+};
+
+const buildDistanceLabels = (distances) => {
+  const labels = {};
+  Object.entries(distances).forEach(([node, value]) => {
+    labels[node] = formatSimValue(value);
+  });
+  return labels;
+};
+
+const buildDijkstraSteps = (config) => {
+  const steps = [];
+  const graph = config.graph;
+  const nodes = graph.nodes.map((node) => node.id);
+  const adjacency = buildAdjacency(graph);
+  const distances = {};
+  const visited = new Set();
+  const frontier = [];
+
+  nodes.forEach((node) => {
+    distances[node] = Infinity;
+  });
+  distances[config.start] = 0;
+  frontier.push({ node: config.start, dist: 0 });
+
+  while (frontier.length) {
+    frontier.sort((a, b) => a.dist - b.dist);
+    const { node } = frontier.shift();
+    if (visited.has(node)) {
+      continue;
+    }
+    visited.add(node);
+
+    steps.push({
+      activeNode: node,
+      visited: Array.from(visited),
+      frontier: frontier.map((item) => item.node),
+      distances: { ...distances },
+      nodeLabels: buildDistanceLabels(distances),
+    });
+
+    adjacency[node].forEach((edge) => {
+      const next = edge.to;
+      const newDist = distances[node] + edge.weight;
+      const updated = newDist < distances[next];
+      if (updated) {
+        distances[next] = newDist;
+        frontier.push({ node: next, dist: newDist });
+      }
+      steps.push({
+        activeNode: node,
+        activeEdge: { from: node, to: next },
+        visited: Array.from(visited),
+        frontier: frontier.map((item) => item.node),
+        distances: { ...distances },
+        nodeLabels: buildDistanceLabels(distances),
+        updated,
+      });
+    });
+  }
+
+  return steps;
+};
+
+const buildBellmanFordSteps = (config) => {
+  const steps = [];
+  const graph = config.graph;
+  const nodes = graph.nodes.map((node) => node.id);
+  const edges = graph.edges;
+  const distances = {};
+
+  nodes.forEach((node) => {
+    distances[node] = Infinity;
+  });
+  distances[config.start] = 0;
+
+  for (let i = 0; i < nodes.length - 1; i += 1) {
+    edges.forEach((edge) => {
+      const from = edge.from;
+      const to = edge.to;
+      const weight = edge.weight ?? 0;
+      let updated = false;
+
+      if (distances[from] !== Infinity && distances[from] + weight < distances[to]) {
+        distances[to] = distances[from] + weight;
+        updated = true;
+      }
+
+      steps.push({
+        iteration: i + 1,
+        activeEdge: { from, to },
+        updated,
+        distances: { ...distances },
+        nodeLabels: buildDistanceLabels(distances),
+      });
+    });
+  }
+
+  return steps;
+};
+
+const buildFloydWarshallSteps = (config) => {
+  const steps = [];
+  const graph = config.graph;
+  const nodes = graph.nodes.map((node) => node.id);
+  const indexByNode = new Map(nodes.map((node, index) => [node, index]));
+  const size = nodes.length;
+  const dist = Array.from({ length: size }, () => Array(size).fill(Infinity));
+
+  for (let i = 0; i < size; i += 1) {
+    dist[i][i] = 0;
+  }
+  graph.edges.forEach((edge) => {
+    const i = indexByNode.get(edge.from);
+    const j = indexByNode.get(edge.to);
+    if (edge.weight < dist[i][j]) {
+      dist[i][j] = edge.weight;
+    }
+  });
+
+  for (let k = 0; k < size; k += 1) {
+    for (let i = 0; i < size; i += 1) {
+      for (let j = 0; j < size; j += 1) {
+        const alt = dist[i][k] + dist[k][j];
+        if (alt < dist[i][j]) {
+          dist[i][j] = alt;
+        }
+        steps.push({
+          activeNode: nodes[k],
+          dependencyNodes: [nodes[i], nodes[j]],
+          dpMatrix: dist.map((row) => row.slice()),
+          activeCell: { row: i, col: j },
+          dependencies: [
+            { row: i, col: k },
+            { row: k, col: j },
+          ],
+          k,
+          i,
+          j,
+        });
+      }
+    }
+  }
+
+  return steps;
+};
+
+const buildAStarSteps = (config) => {
+  const steps = [];
+  const graph = config.graph;
+  const nodes = graph.nodes.map((node) => node.id);
+  const nodeById = new Map(graph.nodes.map((node) => [node.id, node]));
+  const adjacency = buildAdjacency(graph);
+  const goal = config.goal;
+  const gScore = {};
+  const frontier = [];
+  const visited = new Set();
+
+  const heuristic = (nodeId) => {
+    const node = nodeById.get(nodeId);
+    const target = nodeById.get(goal);
+    if (!node || !target) {
+      return 0;
+    }
+    const dx = node.x - target.x;
+    const dy = node.y - target.y;
+    return Math.round(Math.sqrt(dx * dx + dy * dy));
+  };
+
+  nodes.forEach((node) => {
+    gScore[node] = Infinity;
+  });
+  gScore[config.start] = 0;
+  frontier.push({ node: config.start, f: heuristic(config.start), g: 0 });
+
+  while (frontier.length) {
+    frontier.sort((a, b) => a.f - b.f);
+    const current = frontier.shift();
+    if (!current) {
+      break;
+    }
+    const node = current.node;
+    if (visited.has(node)) {
+      continue;
+    }
+    visited.add(node);
+    steps.push({
+      activeNode: node,
+      visited: Array.from(visited),
+      frontier: frontier.map((item) => item.node),
+      nodeLabels: buildDistanceLabels(gScore),
+      goal,
+    });
+    if (node === goal) {
+      break;
+    }
+
+    adjacency[node].forEach((edge) => {
+      const next = edge.to;
+      const tentative = gScore[node] + edge.weight;
+      if (tentative < gScore[next]) {
+        gScore[next] = tentative;
+        frontier.push({ node: next, g: tentative, f: tentative + heuristic(next) });
+      }
+      steps.push({
+        activeNode: node,
+        activeEdge: { from: node, to: next },
+        visited: Array.from(visited),
+        frontier: frontier.map((item) => item.node),
+        nodeLabels: buildDistanceLabels(gScore),
+        goal,
+      });
+    });
+  }
+
+  return steps;
+};
+
+const buildUnionFindSteps = (config) => {
+  const steps = [];
+  const nodes = config.graph.nodes.map((node) => node.id);
+  const parent = {};
+  const rank = {};
+  const selectedEdges = new Set();
+
+  nodes.forEach((node) => {
+    parent[node] = node;
+    rank[node] = 0;
+  });
+
+  const find = (x) => {
+    if (parent[x] !== x) {
+      parent[x] = find(parent[x]);
+    }
+    return parent[x];
+  };
+
+  const union = (a, b) => {
+    let ra = find(a);
+    let rb = find(b);
+    if (ra === rb) {
+      return false;
+    }
+    if (rank[ra] < rank[rb]) {
+      [ra, rb] = [rb, ra];
+    }
+    parent[rb] = ra;
+    if (rank[ra] === rank[rb]) {
+      rank[ra] += 1;
+    }
+    return true;
+  };
+
+  config.operations.forEach(([a, b]) => {
+    const merged = union(a, b);
+    const key = edgeKey(a, b, false);
+    if (merged) {
+      selectedEdges.add(key);
+    }
+    steps.push({
+      activeEdge: { from: a, to: b },
+      selectedEdges: Array.from(selectedEdges),
+      nodeLabels: { ...parent },
+      merged,
+    });
+  });
+
+  return steps;
+};
+
+const buildKruskalSteps = (config) => {
+  const steps = [];
+  const graph = config.graph;
+  const nodes = graph.nodes.map((node) => node.id);
+  const parent = {};
+  const rank = {};
+  const selectedEdges = new Set();
+  let totalWeight = 0;
+
+  nodes.forEach((node) => {
+    parent[node] = node;
+    rank[node] = 0;
+  });
+
+  const find = (x) => {
+    if (parent[x] !== x) {
+      parent[x] = find(parent[x]);
+    }
+    return parent[x];
+  };
+
+  const union = (a, b) => {
+    let ra = find(a);
+    let rb = find(b);
+    if (ra === rb) {
+      return false;
+    }
+    if (rank[ra] < rank[rb]) {
+      [ra, rb] = [rb, ra];
+    }
+    parent[rb] = ra;
+    if (rank[ra] === rank[rb]) {
+      rank[ra] += 1;
+    }
+    return true;
+  };
+
+  const edges = [...graph.edges].sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0));
+  edges.forEach((edge) => {
+    const key = edgeKey(edge.from, edge.to, false);
+    const added = union(edge.from, edge.to);
+    if (added) {
+      selectedEdges.add(key);
+      totalWeight += edge.weight ?? 0;
+    }
+    steps.push({
+      activeEdge: { from: edge.from, to: edge.to },
+      selectedEdges: Array.from(selectedEdges),
+      action: added ? "add" : "skip",
+      totalWeight,
+    });
+  });
+
+  return steps;
+};
+
+const buildPrimSteps = (config) => {
+  const steps = [];
+  const graph = config.graph;
+  const adjacency = buildAdjacency(graph);
+  const visited = new Set([config.start]);
+  const selectedEdges = new Set();
+  let totalWeight = 0;
+  const edgePool = [];
+
+  adjacency[config.start].forEach((edge) => {
+    edgePool.push({ from: config.start, to: edge.to, weight: edge.weight });
+  });
+
+  while (edgePool.length) {
+    edgePool.sort((a, b) => a.weight - b.weight);
+    const edge = edgePool.shift();
+    if (!edge) {
+      break;
+    }
+    if (visited.has(edge.to)) {
+      continue;
+    }
+    visited.add(edge.to);
+    totalWeight += edge.weight;
+    selectedEdges.add(edgeKey(edge.from, edge.to, false));
+    steps.push({
+      activeEdge: { from: edge.from, to: edge.to },
+      visited: Array.from(visited),
+      selectedEdges: Array.from(selectedEdges),
+      totalWeight,
+    });
+    adjacency[edge.to].forEach((next) => {
+      if (!visited.has(next.to)) {
+        edgePool.push({ from: edge.to, to: next.to, weight: next.weight });
+      }
+    });
+  }
+
+  return steps;
+};
+
+const buildSccSteps = (config) => {
+  const steps = [];
+  const graph = config.graph;
+  const nodes = graph.nodes.map((node) => node.id);
+  const adjacency = buildAdjacency(graph);
+  const reverseAdj = {};
+  nodes.forEach((node) => {
+    reverseAdj[node] = [];
+  });
+  graph.edges.forEach((edge) => {
+    reverseAdj[edge.to].push(edge.from);
+  });
+
+  const seen = new Set();
+  const order = [];
+
+  const dfs = (node) => {
+    seen.add(node);
+    adjacency[node].forEach((edge) => {
+      if (!seen.has(edge.to)) {
+        dfs(edge.to);
+      }
+    });
+    order.push(node);
+    steps.push({
+      phase: "order",
+      activeNode: node,
+      visited: Array.from(seen),
+      order: [...order],
+    });
+  };
+
+  nodes.forEach((node) => {
+    if (!seen.has(node)) {
+      dfs(node);
+    }
+  });
+
+  const components = {};
+  seen.clear();
+  let componentId = 0;
+
+  const dfsRev = (node) => {
+    seen.add(node);
+    components[node] = componentId;
+    reverseAdj[node].forEach((next) => {
+      if (!seen.has(next)) {
+        dfsRev(next);
+      }
+    });
+  };
+
+  [...order].reverse().forEach((node) => {
+    if (!seen.has(node)) {
+      componentId += 1;
+      dfsRev(node);
+      steps.push({
+        phase: "component",
+        activeNode: node,
+        nodeLabels: { ...components },
+      });
+    }
+  });
+
+  return steps;
+};
+
+const buildBridgesSteps = (config) => {
+  const steps = [];
+  const graph = config.graph;
+  const adjacency = buildAdjacency(graph);
+  const disc = {};
+  const low = {};
+  const parent = {};
+  const bridges = [];
+  let time = 0;
+
+  const labelMap = () => {
+    const labels = {};
+    Object.keys(disc).forEach((node) => {
+      labels[node] = `${disc[node]}/${low[node]}`;
+    });
+    return labels;
+  };
+
+  const dfs = (node) => {
+    time += 1;
+    disc[node] = time;
+    low[node] = time;
+    steps.push({
+      activeNode: node,
+      nodeLabels: labelMap(),
+      selectedEdges: bridges.map((edge) => edgeKey(edge.from, edge.to, false)),
+    });
+
+    adjacency[node].forEach((edge) => {
+      const next = edge.to;
+      if (!(next in disc)) {
+        parent[next] = node;
+        steps.push({
+          activeEdge: { from: node, to: next },
+          nodeLabels: labelMap(),
+          selectedEdges: bridges.map((bridge) => edgeKey(bridge.from, bridge.to, false)),
+        });
+        dfs(next);
+        low[node] = Math.min(low[node], low[next]);
+        if (low[next] > disc[node]) {
+          bridges.push({ from: node, to: next });
+        }
+        steps.push({
+          activeNode: node,
+          nodeLabels: labelMap(),
+          selectedEdges: bridges.map((bridge) => edgeKey(bridge.from, bridge.to, false)),
+        });
+      } else if (parent[node] !== next) {
+        low[node] = Math.min(low[node], disc[next]);
+      }
+    });
+  };
+
+  graph.nodes.forEach((node) => {
+    if (!(node.id in disc)) {
+      parent[node.id] = null;
+      dfs(node.id);
+    }
+  });
+
+  return steps;
+};
+
+const buildEulerianSteps = (config) => {
+  const steps = [];
+  const graph = config.graph;
+  const adjacency = {};
+  graph.nodes.forEach((node) => {
+    adjacency[node.id] = [];
+  });
+  graph.edges.forEach((edge) => {
+    adjacency[edge.from].push(edge.to);
+    adjacency[edge.to].push(edge.from);
+  });
+
+  const stack = [config.start];
+  const path = [];
+  const usedEdges = new Set();
+
+  const useEdge = (from, to) => {
+    const key = edgeKey(from, to, false);
+    usedEdges.add(key);
+  };
+
+  while (stack.length) {
+    const node = stack[stack.length - 1];
+    if (adjacency[node].length) {
+      const next = adjacency[node].pop();
+      const idx = adjacency[next].indexOf(node);
+      if (idx >= 0) {
+        adjacency[next].splice(idx, 1);
+      }
+      useEdge(node, next);
+      steps.push({
+        activeNode: node,
+        activeEdge: { from: node, to: next },
+        selectedEdges: Array.from(usedEdges),
+        stack: [...stack],
+        path: [...path],
+      });
+      stack.push(next);
+    } else {
+      path.push(stack.pop());
+      steps.push({
+        activeNode: node,
+        selectedEdges: Array.from(usedEdges),
+        stack: [...stack],
+        path: [...path],
+      });
+    }
+  }
+
+  return steps;
+};
+
+const buildMaxFlowSteps = (config) => {
+  const steps = [];
+  const graph = config.graph;
+  const nodes = graph.nodes.map((node) => node.id);
+  const capacity = {};
+  const adjacency = {};
+  nodes.forEach((node) => {
+    adjacency[node] = [];
+  });
+  graph.edges.forEach((edge) => {
+    capacity[`${edge.from}->${edge.to}`] = edge.weight ?? 0;
+    capacity[`${edge.to}->${edge.from}`] = 0;
+    adjacency[edge.from].push(edge.to);
+    adjacency[edge.to].push(edge.from);
+  });
+
+  const source = config.source;
+  const sink = config.sink;
+  let flow = 0;
+
+  while (true) {
+    const parent = {};
+    const queue = [source];
+    parent[source] = source;
+
+    while (queue.length && !(sink in parent)) {
+      const node = queue.shift();
+      adjacency[node].forEach((next) => {
+        const cap = capacity[`${node}->${next}`] ?? 0;
+        if (!(next in parent) && cap > 0) {
+          parent[next] = node;
+          queue.push(next);
+        }
+      });
+    }
+
+    if (!(sink in parent)) {
+      break;
+    }
+
+    let bottleneck = Infinity;
+    let node = sink;
+    const pathEdges = [];
+    while (node !== source) {
+      const prev = parent[node];
+      bottleneck = Math.min(bottleneck, capacity[`${prev}->${node}`]);
+      pathEdges.push({ from: prev, to: node });
+      node = prev;
+    }
+
+    node = sink;
+    while (node !== source) {
+      const prev = parent[node];
+      capacity[`${prev}->${node}`] -= bottleneck;
+      capacity[`${node}->${prev}`] += bottleneck;
+      node = prev;
+    }
+
+    flow += bottleneck;
+    steps.push({
+      activeEdge: pathEdges[pathEdges.length - 1],
+      selectedEdges: pathEdges.map((edge) => edgeKey(edge.from, edge.to, true)),
+      flow,
+      bottleneck,
+    });
+  }
+
+  return steps;
+};
+
+const buildBipartiteMatchingSteps = (config) => {
+  const steps = [];
+  const graph = config.graph;
+  const matchRight = {};
+  const matchedEdges = new Set();
+
+  const neighbors = {};
+  graph.nodes.forEach((node) => {
+    neighbors[node.id] = [];
+  });
+  graph.edges.forEach((edge) => {
+    neighbors[edge.from].push(edge.to);
+    neighbors[edge.to].push(edge.from);
+  });
+
+  const dfs = (u, seen) => {
+    for (const v of neighbors[u]) {
+      if (seen.has(v)) {
+        continue;
+      }
+      seen.add(v);
+      if (!(v in matchRight) || dfs(matchRight[v], seen)) {
+        matchRight[v] = u;
+        return true;
+      }
+    }
+    return false;
+  };
+
+  config.leftNodes.forEach((u) => {
+    const matched = dfs(u, new Set());
+    matchedEdges.clear();
+    Object.entries(matchRight).forEach(([v, left]) => {
+      matchedEdges.add(edgeKey(left, v, false));
+    });
+    steps.push({
+      activeNode: u,
+      selectedEdges: Array.from(matchedEdges),
+      matched,
+    });
+  });
+
+  return steps;
+};
+
+const buildFibonacciDpSteps = (config) => {
+  const steps = [];
+  const n = config.n;
+  const dp = Array(n + 1).fill(0);
+  const baseIndices = [0, 1];
+  dp[1] = 1;
+  steps.push({
+    dpArray: dp.slice(),
+    activeIndex: 0,
+    baseIndices,
+  });
+  steps.push({
+    dpArray: dp.slice(),
+    activeIndex: 1,
+    baseIndices,
+  });
+
+  for (let i = 2; i <= n; i += 1) {
+    dp[i] = dp[i - 1] + dp[i - 2];
+    steps.push({
+      dpArray: dp.slice(),
+      activeIndex: i,
+      dependencies: [i - 1, i - 2],
+      baseIndices,
+    });
+  }
+
+  return steps;
+};
+
+const buildCoinChangeDpSteps = (config) => {
+  const steps = [];
+  const amount = config.amount;
+  const dp = Array(amount + 1).fill(Infinity);
+  dp[0] = 0;
+  steps.push({ dpArray: dp.slice(), activeIndex: 0, baseIndices: [0], coin: "-" });
+
+  config.coins.forEach((coin) => {
+    for (let total = coin; total <= amount; total += 1) {
+      const candidate = dp[total - coin] + 1;
+      if (candidate < dp[total]) {
+        dp[total] = candidate;
+      }
+      steps.push({
+        dpArray: dp.slice(),
+        activeIndex: total,
+        dependencies: [total - coin],
+        baseIndices: [0],
+        coin,
+      });
+    }
+  });
+
+  return steps;
+};
+
+const buildSquareSubmatrixDpSteps = (config) => {
+  const steps = [];
+  const matrix = config.matrix;
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  const dp = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+  for (let r = 0; r < rows; r += 1) {
+    for (let c = 0; c < cols; c += 1) {
+      const deps = [];
+      const baseCells = [];
+      if (matrix[r][c] === 1) {
+        if (r === 0 || c === 0) {
+          dp[r][c] = 1;
+          baseCells.push({ row: r, col: c });
+        } else {
+          deps.push({ row: r - 1, col: c });
+          deps.push({ row: r, col: c - 1 });
+          deps.push({ row: r - 1, col: c - 1 });
+          dp[r][c] = 1 + Math.min(dp[r - 1][c], dp[r][c - 1], dp[r - 1][c - 1]);
+        }
+      }
+      steps.push({
+        dpMatrix: dp.map((row) => row.slice()),
+        activeCell: { row: r, col: c },
+        dependencies: deps,
+        baseCells,
+        inputValue: matrix[r][c],
+      });
+    }
+  }
+
+  return steps;
+};
+
+const buildTargetSumDpSteps = (config) => {
+  const steps = [];
+  const nums = config.nums;
+  const total = nums.reduce((acc, x) => acc + x, 0);
+  const target = config.target;
+  const subset = (total + target) / 2;
+  if (!Number.isInteger(subset)) {
+    steps.push({ dpArray: [0], activeIndex: 0 });
+    return steps;
+  }
+  const dp = Array(subset + 1).fill(0);
+  dp[0] = 1;
+  steps.push({ dpArray: dp.slice(), activeIndex: 0, baseIndices: [0], num: "-" });
+
+  nums.forEach((num) => {
+    for (let sum = subset; sum >= num; sum -= 1) {
+      dp[sum] += dp[sum - num];
+      steps.push({
+        dpArray: dp.slice(),
+        activeIndex: sum,
+        dependencies: [sum - num],
+        baseIndices: [0],
+        num,
+        subset,
+      });
+    }
+  });
+
+  return steps;
+};
+
+const buildKnapsackDpSteps = (config) => {
+  const steps = [];
+  const capacity = config.capacity;
+  const dp = Array(capacity + 1).fill(0);
+
+  config.weights.forEach((weight, index) => {
+    const value = config.values[index];
+    for (let cap = capacity; cap >= weight; cap -= 1) {
+      dp[cap] = Math.max(dp[cap], dp[cap - weight] + value);
+      steps.push({
+        dpArray: dp.slice(),
+        activeIndex: cap,
+        dependencies: [cap - weight],
+        item: index + 1,
+        weight,
+        value,
+      });
+    }
+  });
+
+  return steps;
+};
+
 const buildSimulationSteps = (config) => {
   switch (config.type) {
     case "sliding-window":
@@ -1558,6 +3769,40 @@ const buildSimulationSteps = (config) => {
       return buildTopologicalSortSteps(config);
     case "two-heaps":
       return buildTwoHeapsSteps(config);
+    case "dijkstra":
+      return buildDijkstraSteps(config);
+    case "bellman-ford":
+      return buildBellmanFordSteps(config);
+    case "floyd-warshall":
+      return buildFloydWarshallSteps(config);
+    case "a-star":
+      return buildAStarSteps(config);
+    case "union-find":
+      return buildUnionFindSteps(config);
+    case "kruskal":
+      return buildKruskalSteps(config);
+    case "prim":
+      return buildPrimSteps(config);
+    case "scc":
+      return buildSccSteps(config);
+    case "bridges-articulation":
+      return buildBridgesSteps(config);
+    case "eulerian-path":
+      return buildEulerianSteps(config);
+    case "max-flow":
+      return buildMaxFlowSteps(config);
+    case "bipartite-matching":
+      return buildBipartiteMatchingSteps(config);
+    case "dp-fibonacci":
+      return buildFibonacciDpSteps(config);
+    case "dp-coin-change":
+      return buildCoinChangeDpSteps(config);
+    case "dp-square-submatrix":
+      return buildSquareSubmatrixDpSteps(config);
+    case "dp-target-sum":
+      return buildTargetSumDpSteps(config);
+    case "dp-knapsack":
+      return buildKnapsackDpSteps(config);
     default:
       return [];
   }
@@ -1576,56 +3821,54 @@ const getPointerLabel = (labels) => {
 };
 
 const renderSimulationTrack = (track, config, step) => {
-  if (config.type === "graph-traversal") {
-    const nodesHtml = config.nodes
-      .map((node) => {
-        const classes = ["sim-node"];
-        if (step.visited.includes(node)) {
-          classes.push("is-visited");
-        }
-        if (step.frontier.includes(node)) {
-          classes.push("is-frontier");
-        }
-        if (node === step.current) {
-          classes.push("is-active");
-        }
-
-        return `
-          <div class="sim-node-wrap">
-            <div class="${classes.join(" ")}">${escapeHtml(node)}</div>
-          </div>
-        `;
-      })
-      .join("");
-
-    track.innerHTML = `<div class="sim-graph">${nodesHtml}</div>`;
+  if (config.visual === "graph") {
+    track.innerHTML = renderGraphCanvas(config.graph, step);
     return;
   }
 
-  if (config.type === "topological-sort") {
-    const nodesHtml = config.nodes
-      .map((node) => {
-        const classes = ["sim-node"];
-        if (step.order.includes(node)) {
-          classes.push("is-visited");
-        }
-        if (step.queue.includes(node)) {
-          classes.push("is-frontier");
-        }
-        if (node === step.current) {
-          classes.push("is-active");
-        }
+  if (config.visual === "graph+matrix") {
+    const graphHtml = renderGraphCanvas(config.graph, step);
+    const matrixHtml = renderDpMatrix(step);
+    track.innerHTML = `<div class="sim-split">${graphHtml}${matrixHtml}</div>`;
+    return;
+  }
 
-        return `
-          <div class="sim-node-wrap">
-            <div class="${classes.join(" ")}">${escapeHtml(node)}</div>
-            <span class="sim-degree">deg ${step.inDegree[node]}</span>
+  if (config.visual === "dp-array") {
+    if (config.inputArray || config.inputArrays) {
+      const arrays = config.inputArrays || [{ label: "Input", values: config.inputArray }];
+      const inputsHtml = arrays.map((arr) => renderStaticArray(arr.values, arr.label)).join("");
+      const dpHtml = `
+        <div>
+          <p class="eyebrow">DP table</p>
+          ${renderDpArray(step)}
+        </div>
+      `;
+      track.innerHTML = `<div class="sim-stack">${inputsHtml}${dpHtml}</div>`;
+      return;
+    }
+    track.innerHTML = renderDpArray(step);
+    return;
+  }
+
+  if (config.visual === "dp-matrix") {
+    if (config.inputMatrix) {
+      const inputHtml = renderInputMatrix(config.inputMatrix);
+      const dpHtml = renderDpMatrix(step);
+      track.innerHTML = `
+        <div class="sim-split">
+          <div>
+            <p class="eyebrow">Input</p>
+            ${inputHtml}
           </div>
-        `;
-      })
-      .join("");
-
-    track.innerHTML = `<div class="sim-graph">${nodesHtml}</div>`;
+          <div>
+            <p class="eyebrow">DP table</p>
+            ${dpHtml}
+          </div>
+        </div>
+      `;
+      return;
+    }
+    track.innerHTML = renderDpMatrix(step);
     return;
   }
 
@@ -1872,6 +4115,162 @@ const renderSimulationState = (state, config, step, stepIndex, totalSteps) => {
       { label: "Median", value: String(step.median) },
       { label: "Left size", value: String(step.left.length) },
       { label: "Right size", value: String(step.right.length) }
+    );
+  }
+
+  if (config.type === "dijkstra") {
+    const distances = Object.entries(step.distances || {})
+      .map(([node, value]) => `${node}:${formatSimValue(value)}`)
+      .join(", ");
+    baseItems.push(
+      { label: "Current", value: step.activeNode || "-" },
+      { label: "Frontier", value: (step.frontier || []).join(", ") || "-" },
+      { label: "Distances", value: distances || "-" }
+    );
+  }
+
+  if (config.type === "bellman-ford") {
+    const distances = Object.entries(step.distances || {})
+      .map(([node, value]) => `${node}:${formatSimValue(value)}`)
+      .join(", ");
+    const edgeLabel = step.activeEdge ? `${step.activeEdge.from}->${step.activeEdge.to}` : "-";
+    baseItems.push(
+      { label: "Iteration", value: String(step.iteration) },
+      { label: "Edge", value: edgeLabel },
+      { label: "Updated", value: step.updated ? "yes" : "no" },
+      { label: "Distances", value: distances || "-" }
+    );
+  }
+
+  if (config.type === "floyd-warshall") {
+    baseItems.push(
+      { label: "k", value: String(step.k) },
+      { label: "i", value: String(step.i) },
+      { label: "j", value: String(step.j) }
+    );
+  }
+
+  if (config.type === "a-star") {
+    const distances = Object.entries(step.nodeLabels || {})
+      .map(([node, value]) => `${node}:${value}`)
+      .join(", ");
+    baseItems.push(
+      { label: "Current", value: step.activeNode || "-" },
+      { label: "Goal", value: step.goal || "-" },
+      { label: "Frontier", value: (step.frontier || []).join(", ") || "-" },
+      { label: "gScore", value: distances || "-" }
+    );
+  }
+
+  if (config.type === "union-find") {
+    const parents = Object.entries(step.nodeLabels || {})
+      .map(([node, value]) => `${node}->${value}`)
+      .join(", ");
+    const edgeLabel = step.activeEdge ? `${step.activeEdge.from}-${step.activeEdge.to}` : "-";
+    baseItems.push(
+      { label: "Union", value: edgeLabel },
+      { label: "Merged", value: step.merged ? "yes" : "no" },
+      { label: "Parents", value: parents || "-" }
+    );
+  }
+
+  if (config.type === "kruskal") {
+    const edgeLabel = step.activeEdge ? `${step.activeEdge.from}-${step.activeEdge.to}` : "-";
+    baseItems.push(
+      { label: "Edge", value: edgeLabel },
+      { label: "Action", value: step.action || "-" },
+      { label: "Total weight", value: String(step.totalWeight ?? 0) }
+    );
+  }
+
+  if (config.type === "prim") {
+    const edgeLabel = step.activeEdge ? `${step.activeEdge.from}-${step.activeEdge.to}` : "-";
+    baseItems.push(
+      { label: "Edge", value: edgeLabel },
+      { label: "Visited", value: (step.visited || []).join(", ") || "-" },
+      { label: "Total weight", value: String(step.totalWeight ?? 0) }
+    );
+  }
+
+  if (config.type === "scc") {
+    const components = Object.entries(step.nodeLabels || {})
+      .map(([node, value]) => `${node}:${value}`)
+      .join(", ");
+    baseItems.push(
+      { label: "Phase", value: step.phase || "-" },
+      { label: "Order", value: (step.order || []).join(" -> ") || "-" },
+      { label: "Components", value: components || "-" }
+    );
+  }
+
+  if (config.type === "bridges-articulation") {
+    const bridges = (step.selectedEdges || []).join(", ") || "-";
+    baseItems.push(
+      { label: "Bridges", value: bridges },
+      { label: "Labels", value: Object.values(step.nodeLabels || {}).join(", ") || "-" }
+    );
+  }
+
+  if (config.type === "eulerian-path") {
+    baseItems.push(
+      { label: "Stack", value: (step.stack || []).join(" -> ") || "-" },
+      { label: "Path", value: (step.path || []).join(" -> ") || "-" }
+    );
+  }
+
+  if (config.type === "max-flow") {
+    baseItems.push(
+      { label: "Flow", value: String(step.flow ?? 0) },
+      { label: "Bottleneck", value: String(step.bottleneck ?? "-") },
+      { label: "Path edges", value: (step.selectedEdges || []).join(", ") || "-" }
+    );
+  }
+
+  if (config.type === "bipartite-matching") {
+    baseItems.push(
+      { label: "Active left", value: step.activeNode || "-" },
+      { label: "Matched", value: step.matched ? "yes" : "no" },
+      { label: "Matches", value: (step.selectedEdges || []).join(", ") || "-" }
+    );
+  }
+
+  if (config.type === "dp-fibonacci") {
+    baseItems.push(
+      { label: "Index", value: String(step.activeIndex) },
+      { label: "Value", value: formatSimValue(step.dpArray?.[step.activeIndex]) }
+    );
+  }
+
+  if (config.type === "dp-coin-change") {
+    baseItems.push(
+      { label: "Coin", value: String(step.coin) },
+      { label: "Amount", value: String(step.activeIndex) },
+      { label: "Min coins", value: formatSimValue(step.dpArray?.[step.activeIndex]) }
+    );
+  }
+
+  if (config.type === "dp-square-submatrix") {
+    const cellValue = step.dpMatrix?.[step.activeCell?.row]?.[step.activeCell?.col];
+    baseItems.push(
+      { label: "Cell", value: `${step.activeCell?.row},${step.activeCell?.col}` },
+      { label: "Value", value: String(step.inputValue) },
+      { label: "Square size", value: formatSimValue(cellValue) }
+    );
+  }
+
+  if (config.type === "dp-target-sum") {
+    baseItems.push(
+      { label: "Num", value: String(step.num) },
+      { label: "Sum", value: String(step.activeIndex) },
+      { label: "Ways", value: formatSimValue(step.dpArray?.[step.activeIndex]) }
+    );
+  }
+
+  if (config.type === "dp-knapsack") {
+    baseItems.push(
+      { label: "Item", value: String(step.item) },
+      { label: "Capacity", value: String(step.activeIndex) },
+      { label: "Best value", value: formatSimValue(step.dpArray?.[step.activeIndex]) }
     );
   }
 

@@ -70,6 +70,232 @@ const graphCode = `def add_edge(graph, u, v):
     graph[u].append(v)
     graph[v].append(u)`;
 
+const adjacencyMatrixCode = `def add_edge(matrix, u, v):
+    matrix[u][v] = 1
+    matrix[v][u] = 1
+
+def has_edge(matrix, u, v):
+    return matrix[u][v] == 1`;
+
+const edgeListCode = `def add_edge(edges, u, v):
+    edges.append((u, v))
+
+def has_edge(edges, u, v):
+    return (u, v) in edges or (v, u) in edges`;
+
+const doublyLinkedListCode = `class Node:
+    def __init__(self, val=0, prev=None, next=None):
+        self.val = val
+        self.prev = prev
+        self.next = next
+
+def insert_after(node, value):
+    new_node = Node(value, node, node.next)
+    if node.next:
+        node.next.prev = new_node
+    node.next = new_node
+    return new_node`;
+
+const trieCode = `class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.terminal = False
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word):
+        node = self.root
+        for ch in word:
+            node = node.children.setdefault(ch, TrieNode())
+        node.terminal = True
+
+    def search(self, word):
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                return False
+            node = node.children[ch]
+        return node.terminal`;
+
+const avlTreeCode = `class Node:
+    def __init__(self, val):
+        self.val = val
+        self.left = None
+        self.right = None
+        self.height = 1
+
+def height(node):
+    return node.height if node else 0
+
+def rotate_left(z):
+    y = z.right
+    t2 = y.left
+    y.left = z
+    z.right = t2
+    z.height = 1 + max(height(z.left), height(z.right))
+    y.height = 1 + max(height(y.left), height(y.right))
+    return y
+
+def rotate_right(z):
+    y = z.left
+    t3 = y.right
+    y.right = z
+    z.left = t3
+    z.height = 1 + max(height(z.left), height(z.right))
+    y.height = 1 + max(height(y.left), height(y.right))
+    return y
+
+def insert(root, val):
+    if not root:
+        return Node(val)
+    if val < root.val:
+        root.left = insert(root.left, val)
+    else:
+        root.right = insert(root.right, val)
+    root.height = 1 + max(height(root.left), height(root.right))
+    balance = height(root.left) - height(root.right)
+    if balance > 1 and val < root.left.val:
+        return rotate_right(root)
+    if balance < -1 and val > root.right.val:
+        return rotate_left(root)
+    if balance > 1 and val > root.left.val:
+        root.left = rotate_left(root.left)
+        return rotate_right(root)
+    if balance < -1 and val < root.right.val:
+        root.right = rotate_right(root.right)
+        return rotate_left(root)
+    return root`;
+
+const redBlackTreeCode = `RED = True
+BLACK = False
+
+class Node:
+    def __init__(self, val, color=RED):
+        self.val = val
+        self.color = color
+        self.left = None
+        self.right = None
+
+def rotate_left(root):
+    x = root.right
+    root.right = x.left
+    x.left = root
+    return x
+
+def rotate_right(root):
+    x = root.left
+    root.left = x.right
+    x.right = root
+    return x
+
+def insert(root, val):
+    if not root:
+        return Node(val, color=BLACK)
+    if val < root.val:
+        root.left = insert(root.left, val)
+    else:
+        root.right = insert(root.right, val)
+    # Fix red-black invariants with rotations + recoloring.
+    return root`;
+
+const bTreeCode = `class BTreeNode:
+    def __init__(self, keys=None, children=None, leaf=True):
+        self.keys = keys or []
+        self.children = children or []
+        self.leaf = leaf
+
+def search(node, key):
+    i = 0
+    while i < len(node.keys) and key > node.keys[i]:
+        i += 1
+    if i < len(node.keys) and node.keys[i] == key:
+        return True
+    if node.leaf:
+        return False
+    return search(node.children[i], key)`;
+
+const segmentTreeCode = `def build(nums):
+    n = len(nums)
+    tree = [0] * (2 * n)
+    for i in range(n):
+        tree[n + i] = nums[i]
+    for i in range(n - 1, 0, -1):
+        tree[i] = tree[i * 2] + tree[i * 2 + 1]
+    return tree
+
+def update(tree, index, value):
+    n = len(tree) // 2
+    i = index + n
+    tree[i] = value
+    while i > 1:
+        i //= 2
+        tree[i] = tree[i * 2] + tree[i * 2 + 1]
+
+def query(tree, left, right):
+    n = len(tree) // 2
+    left += n
+    right += n
+    total = 0
+    while left <= right:
+        if left % 2 == 1:
+            total += tree[left]
+            left += 1
+        if right % 2 == 0:
+            total += tree[right]
+            right -= 1
+        left //= 2
+        right //= 2
+    return total`;
+
+const fenwickTreeCode = `class Fenwick:
+    def __init__(self, n):
+        self.tree = [0] * (n + 1)
+
+    def add(self, index, delta):
+        i = index + 1
+        while i < len(self.tree):
+            self.tree[i] += delta
+            i += i & -i
+
+    def prefix_sum(self, index):
+        i = index + 1
+        total = 0
+        while i > 0:
+            total += self.tree[i]
+            i -= i & -i
+        return total`;
+
+const skipListCode = `class SkipNode:
+    def __init__(self, val, next_nodes):
+        self.val = val
+        self.next = next_nodes
+
+class SkipList:
+    def __init__(self):
+        self.head = SkipNode(None, [None])
+
+    def search(self, target):
+        node = self.head
+        for level in reversed(range(len(node.next))):
+            while node.next[level] and node.next[level].val < target:
+                node = node.next[level]
+        node = node.next[0]
+        return node is not None and node.val == target`;
+
+const bloomFilterCode = `class BloomFilter:
+    def __init__(self, size, hashes):
+        self.bits = [0] * size
+        self.hashes = hashes
+
+    def add(self, value):
+        for fn in self.hashes:
+            self.bits[fn(value) % len(self.bits)] = 1
+
+    def contains(self, value):
+        return all(self.bits[fn(value) % len(self.bits)] for fn in self.hashes)`;
+
 const linearSearchCode = `def linear_search(nums, target):
     for i, x in enumerate(nums):
         if x == target:
@@ -761,6 +987,11 @@ const dataStructures = [
       },
     ],
     complexity: { time: "Read O(1), insert/delete O(n)", space: "O(n)" },
+    operations: {
+      read: { label: "O(1)", rank: 1, note: "index" },
+      write: { label: "O(n)", rank: 4, note: "insert/delete" },
+      search: { label: "O(n)", rank: 4, note: "unsorted" },
+    },
     pythonCode: arrayCode,
     exampleProblems: ["Two Sum (sorted)", "Rotate Array", "Prefix Sum Queries"],
   },
@@ -786,8 +1017,43 @@ const dataStructures = [
       },
     ],
     complexity: { time: "Search O(n), insert/delete O(1) after locate", space: "O(n)" },
+    operations: {
+      read: { label: "O(n)", rank: 4, note: "by index" },
+      write: { label: "O(1)", rank: 1, note: "after locate" },
+      search: { label: "O(n)", rank: 4, note: "scan" },
+    },
     pythonCode: linkedListCode,
     exampleProblems: ["Reverse Linked List", "Merge Two Lists", "Detect Cycle"],
+  },
+  {
+    slug: "doubly-linked-list",
+    title: "Doubly Linked Lists",
+    summary: "Linked nodes with prev/next pointers.",
+    kind: "data-structure",
+    description:
+      "Doubly linked lists allow traversal in both directions and make deletions O(1) once you have the node.",
+    sections: [
+      {
+        title: "Core operations",
+        items: ["insert/delete O(1) with node", "append O(1) with tail", "bidirectional traversal"],
+      },
+      {
+        title: "When to use",
+        items: ["LRU cache lists", "frequent middle deletes", "back/forward navigation"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["extra pointer per node", "pointer updates are error-prone", "no random access"],
+      },
+    ],
+    complexity: { time: "Search O(n), insert/delete O(1) with node", space: "O(n)" },
+    operations: {
+      read: { label: "O(n)", rank: 4, note: "by index" },
+      write: { label: "O(1)", rank: 1, note: "with node" },
+      search: { label: "O(n)", rank: 4, note: "scan" },
+    },
+    pythonCode: doublyLinkedListCode,
+    exampleProblems: ["LRU Cache", "Browser History", "Design Linked List"],
   },
   {
     slug: "stack",
@@ -811,6 +1077,11 @@ const dataStructures = [
       },
     ],
     complexity: { time: "Push/pop O(1)", space: "O(n)" },
+    operations: {
+      read: { label: "O(1)", rank: 1, note: "peek" },
+      write: { label: "O(1)", rank: 1, note: "push/pop" },
+      search: { label: "O(n)", rank: 4, note: "scan" },
+    },
     pythonCode: stackCode,
     exampleProblems: ["Valid Parentheses", "Daily Temperatures", "Decode String"],
   },
@@ -836,6 +1107,11 @@ const dataStructures = [
       },
     ],
     complexity: { time: "Enqueue/dequeue O(1)", space: "O(n)" },
+    operations: {
+      read: { label: "O(1)", rank: 1, note: "front" },
+      write: { label: "O(1)", rank: 1, note: "enqueue/dequeue" },
+      search: { label: "O(n)", rank: 4, note: "scan" },
+    },
     pythonCode: queueCode,
     exampleProblems: ["Number of Islands", "Binary Tree Level Order", "Shortest Path in Grid"],
   },
@@ -861,6 +1137,11 @@ const dataStructures = [
       },
     ],
     complexity: { time: "Average O(1), worst O(n)", space: "O(n)" },
+    operations: {
+      read: { label: "O(1)", rank: 1, note: "avg" },
+      write: { label: "O(1)", rank: 1, note: "avg" },
+      search: { label: "O(1)", rank: 1, note: "avg" },
+    },
     pythonCode: hashTableCode,
     exampleProblems: ["Two Sum", "LRU Cache", "Word Pattern"],
   },
@@ -886,8 +1167,133 @@ const dataStructures = [
       },
     ],
     complexity: { time: "Average O(log n), worst O(n)", space: "O(n)" },
+    operations: {
+      read: { label: "O(log n)", rank: 2, note: "balanced" },
+      write: { label: "O(log n)", rank: 2, note: "balanced" },
+      search: { label: "O(log n)", rank: 2, note: "balanced" },
+    },
     pythonCode: treeCode,
     exampleProblems: ["Validate BST", "Kth Smallest in BST", "Lowest Common Ancestor"],
+  },
+  {
+    slug: "avl-tree",
+    title: "AVL Trees",
+    summary: "Strictly balanced binary search trees.",
+    kind: "data-structure",
+    description:
+      "AVL trees keep heights tightly balanced, guaranteeing log-time operations with more rotations on updates.",
+    sections: [
+      {
+        title: "Core operations",
+        items: ["search/insert/delete O(log n)", "rotate to rebalance", "track heights"],
+      },
+      {
+        title: "When to use",
+        items: ["read-heavy ordered sets", "range queries", "consistent log-time lookups"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["more rotations on writes", "extra height bookkeeping"],
+      },
+    ],
+    complexity: { time: "Search/insert/delete O(log n)", space: "O(n)" },
+    operations: {
+      read: { label: "O(log n)", rank: 2, note: "balanced" },
+      write: { label: "O(log n)", rank: 2, note: "rotations" },
+      search: { label: "O(log n)", rank: 2, note: "balanced" },
+    },
+    pythonCode: avlTreeCode,
+    exampleProblems: ["My Calendar I", "Kth Smallest in BST", "Range Module"],
+  },
+  {
+    slug: "red-black-tree",
+    title: "Red-Black Trees",
+    summary: "Balanced BSTs with relaxed height rules.",
+    kind: "data-structure",
+    description:
+      "Red-black trees keep balance using color rules, offering log-time operations with fewer rotations than AVL.",
+    sections: [
+      {
+        title: "Core operations",
+        items: ["search/insert/delete O(log n)", "recolor + rotate on insert", "black-height invariants"],
+      },
+      {
+        title: "When to use",
+        items: ["ordered maps", "tree-based sets", "standard library TreeMap/TreeSet"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["complex rebalancing rules", "harder to implement correctly"],
+      },
+    ],
+    complexity: { time: "Search/insert/delete O(log n)", space: "O(n)" },
+    operations: {
+      read: { label: "O(log n)", rank: 2, note: "balanced" },
+      write: { label: "O(log n)", rank: 2, note: "recolor" },
+      search: { label: "O(log n)", rank: 2, note: "balanced" },
+    },
+    pythonCode: redBlackTreeCode,
+    exampleProblems: ["My Calendar II", "Range Module", "Ordered Map"],
+  },
+  {
+    slug: "b-tree",
+    title: "B-Trees",
+    summary: "Multiway balanced trees for storage engines.",
+    kind: "data-structure",
+    description:
+      "B-trees store many keys per node to keep the tree shallow, making them ideal for disk and database indexes.",
+    sections: [
+      {
+        title: "Core operations",
+        items: ["search/insert/delete O(log n)", "split/merge nodes", "high fanout"],
+      },
+      {
+        title: "When to use",
+        items: ["database indexes", "filesystems", "large ordered data sets"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["complex rebalancing", "tuning node size for hardware"],
+      },
+    ],
+    complexity: { time: "Search/insert/delete O(log n)", space: "O(n)" },
+    operations: {
+      read: { label: "O(log n)", rank: 2, note: "high fanout" },
+      write: { label: "O(log n)", rank: 2, note: "splits" },
+      search: { label: "O(log n)", rank: 2, note: "high fanout" },
+    },
+    pythonCode: bTreeCode,
+    exampleProblems: ["Database Index Scan", "Filesystem Lookup", "Large Range Queries"],
+  },
+  {
+    slug: "trie",
+    title: "Tries (Prefix Trees)",
+    summary: "Prefix indexing over characters.",
+    kind: "data-structure",
+    description:
+      "Tries store characters along a path so prefix searches take time proportional to word length, not the number of words.",
+    sections: [
+      {
+        title: "Core operations",
+        items: ["insert/search O(k)", "prefix queries", "store words by character"],
+      },
+      {
+        title: "When to use",
+        items: ["autocomplete", "dictionary lookups", "prefix filtering"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["high memory usage", "large alphabets add overhead"],
+      },
+    ],
+    complexity: { time: "Insert/search O(k)", space: "O(total characters)" },
+    operations: {
+      read: { label: "O(k)", rank: 3, note: "k = key length" },
+      write: { label: "O(k)", rank: 3, note: "k = key length" },
+      search: { label: "O(k)", rank: 3, note: "k = key length" },
+    },
+    pythonCode: trieCode,
+    exampleProblems: ["Implement Trie", "Word Search II", "Replace Words"],
   },
   {
     slug: "heap",
@@ -911,8 +1317,163 @@ const dataStructures = [
       },
     ],
     complexity: { time: "Insert/extract O(log n)", space: "O(n)" },
+    operations: {
+      read: { label: "O(1)", rank: 1, note: "peek" },
+      write: { label: "O(log n)", rank: 2, note: "insert" },
+      search: { label: "O(n)", rank: 4, note: "scan" },
+    },
     pythonCode: heapCode,
     exampleProblems: ["Kth Largest Element", "Merge K Sorted Lists", "Task Scheduler"],
+  },
+  {
+    slug: "segment-tree",
+    title: "Segment Trees",
+    summary: "Range queries with log-time updates.",
+    kind: "data-structure",
+    description:
+      "Segment trees store aggregate values over ranges, enabling fast range sum/min queries with point updates.",
+    sections: [
+      {
+        title: "Core operations",
+        items: ["range query O(log n)", "point update O(log n)", "build O(n)"],
+      },
+      {
+        title: "When to use",
+        items: ["dynamic range sums", "range minimum/maximum", "offline query batches"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["extra memory overhead", "careful index boundaries"],
+      },
+    ],
+    complexity: { time: "Query/update O(log n)", space: "O(n)" },
+    operations: {
+      read: { label: "O(log n)", rank: 2, note: "range query" },
+      write: { label: "O(log n)", rank: 2, note: "point update" },
+      search: { label: "O(log n)", rank: 2, note: "range query" },
+    },
+    pythonCode: segmentTreeCode,
+    exampleProblems: ["Range Sum Query", "Range Minimum Query", "Dynamic RMQ"],
+  },
+  {
+    slug: "fenwick-tree",
+    title: "Fenwick Trees (BIT)",
+    summary: "Compact structure for prefix sums.",
+    kind: "data-structure",
+    description:
+      "Fenwick trees store cumulative frequencies and support fast prefix sums and point updates with low constants.",
+    sections: [
+      {
+        title: "Core operations",
+        items: ["prefix sum O(log n)", "point update O(log n)", "space-efficient array layout"],
+      },
+      {
+        title: "When to use",
+        items: ["prefix sums", "inversion counts", "lightweight range sums"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["harder to support range updates", "indexing is 1-based internally"],
+      },
+    ],
+    complexity: { time: "Update/query O(log n)", space: "O(n)" },
+    operations: {
+      read: { label: "O(log n)", rank: 2, note: "prefix sum" },
+      write: { label: "O(log n)", rank: 2, note: "point update" },
+      search: { label: "O(log n)", rank: 2, note: "prefix search" },
+    },
+    pythonCode: fenwickTreeCode,
+    exampleProblems: ["Range Sum Query (mutable)", "Count of Smaller Numbers", "Inversion Count"],
+  },
+  {
+    slug: "skip-list",
+    title: "Skip Lists",
+    summary: "Layered lists with probabilistic balance.",
+    kind: "data-structure",
+    description:
+      "Skip lists add express lanes to linked lists, giving average log-time search and updates without rotations.",
+    sections: [
+      {
+        title: "Core operations",
+        items: ["search/insert/delete O(log n) avg", "multiple forward pointers", "randomized levels"],
+      },
+      {
+        title: "When to use",
+        items: ["ordered sets", "simpler balanced alternatives", "concurrent maps"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["probabilistic performance", "extra pointers per node"],
+      },
+    ],
+    complexity: { time: "Average O(log n)", space: "O(n)" },
+    operations: {
+      read: { label: "O(log n)", rank: 2, note: "avg" },
+      write: { label: "O(log n)", rank: 2, note: "avg" },
+      search: { label: "O(log n)", rank: 2, note: "avg" },
+    },
+    pythonCode: skipListCode,
+    exampleProblems: ["Design Skiplist", "Ordered Set", "Range Queries"],
+  },
+  {
+    slug: "disjoint-set",
+    title: "Disjoint Set (Union-Find)",
+    summary: "Track components under unions.",
+    kind: "data-structure",
+    description:
+      "Disjoint sets support near-constant time connectivity checks using path compression and union by rank.",
+    sections: [
+      {
+        title: "Core operations",
+        items: ["find with path compression", "union by rank/size", "check connectivity"],
+      },
+      {
+        title: "When to use",
+        items: ["dynamic connectivity", "Kruskal MST", "grouping merges"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["not designed for deletions", "needs careful initialization"],
+      },
+    ],
+    complexity: { time: "Amortized O(alpha(n))", space: "O(n)" },
+    operations: {
+      read: { label: "O(alpha(n))", rank: 1, note: "amortized" },
+      write: { label: "O(alpha(n))", rank: 1, note: "amortized" },
+      search: { label: "O(alpha(n))", rank: 1, note: "connectivity" },
+    },
+    pythonCode: unionFindCode,
+    exampleProblems: ["Number of Provinces", "Accounts Merge", "Kruskal MST"],
+  },
+  {
+    slug: "bloom-filter",
+    title: "Bloom Filters",
+    summary: "Probabilistic set membership.",
+    kind: "data-structure",
+    description:
+      "Bloom filters trade false positives for compact memory. Membership checks are fast but can say yes incorrectly.",
+    sections: [
+      {
+        title: "Core operations",
+        items: ["insert O(k)", "membership test O(k)", "no false negatives"],
+      },
+      {
+        title: "When to use",
+        items: ["cache filters", "duplicate detection", "large-scale existence checks"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["false positives", "deletions require counting filters"],
+      },
+    ],
+    complexity: { time: "Insert/check O(k)", space: "O(m) bits" },
+    operations: {
+      read: { label: "O(k)", rank: 3, note: "k hashes" },
+      write: { label: "O(k)", rank: 3, note: "k hashes" },
+      search: { label: "O(k)", rank: 3, note: "false positive" },
+    },
+    pythonCode: bloomFilterCode,
+    exampleProblems: ["Cache Filtering", "Duplicate URL Check", "Set Membership"],
   },
   {
     slug: "graph",
@@ -936,8 +1497,103 @@ const dataStructures = [
       },
     ],
     complexity: { time: "Edge ops O(1) average", space: "O(V + E)" },
+    operations: {
+      read: { label: "O(1)", rank: 1, note: "neighbors" },
+      write: { label: "O(1)", rank: 1, note: "add edge" },
+      search: { label: "O(V+E)", rank: 5, note: "traverse" },
+    },
     pythonCode: graphCode,
     exampleProblems: ["Course Schedule", "Clone Graph", "Connected Components"],
+  },
+  {
+    slug: "adjacency-list",
+    title: "Adjacency Lists",
+    summary: "Store neighbors per node in lists.",
+    kind: "data-structure",
+    description:
+      "Adjacency lists keep a list of neighbors for each vertex, making them ideal for sparse graphs.",
+    sections: [
+      {
+        title: "Core operations",
+        items: ["iterate neighbors fast", "add edge O(1)", "edge lookup O(deg v)"],
+      },
+      {
+        title: "When to use",
+        items: ["sparse graphs", "most traversals", "memory efficiency"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["edge lookup can be linear in degree", "duplicate edges if not checked"],
+      },
+    ],
+    complexity: { time: "Edge add O(1), lookup O(deg v)", space: "O(V + E)" },
+    operations: {
+      read: { label: "O(deg v)", rank: 3, note: "neighbors" },
+      write: { label: "O(1)", rank: 1, note: "add edge" },
+      search: { label: "O(deg v)", rank: 3, note: "edge lookup" },
+    },
+    pythonCode: graphCode,
+    exampleProblems: ["Sparse Network", "Graph Traversal", "Topological Sort"],
+  },
+  {
+    slug: "adjacency-matrix",
+    title: "Adjacency Matrices",
+    summary: "Matrix of edge connections.",
+    kind: "data-structure",
+    description:
+      "Adjacency matrices use a V x V grid so edge checks are constant-time, at the cost of O(V^2) space.",
+    sections: [
+      {
+        title: "Core operations",
+        items: ["edge lookup O(1)", "toggle edge O(1)", "iterate neighbors O(V)"],
+      },
+      {
+        title: "When to use",
+        items: ["dense graphs", "fast edge checks", "small fixed-size graphs"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["high memory cost", "slow neighbor iteration for sparse graphs"],
+      },
+    ],
+    complexity: { time: "Edge lookup O(1), iterate O(V)", space: "O(V^2)" },
+    operations: {
+      read: { label: "O(1)", rank: 1, note: "edge check" },
+      write: { label: "O(1)", rank: 1, note: "toggle" },
+      search: { label: "O(1)", rank: 1, note: "edge lookup" },
+    },
+    pythonCode: adjacencyMatrixCode,
+    exampleProblems: ["Dense Network", "Transitive Closure", "Graph Matrix Ops"],
+  },
+  {
+    slug: "edge-list",
+    title: "Edge Lists",
+    summary: "Store each edge as a pair or triple.",
+    kind: "data-structure",
+    description:
+      "Edge lists keep a flat list of edges, making them simple to build and easy to sort by weight.",
+    sections: [
+      {
+        title: "Core operations",
+        items: ["append edge O(1)", "edge lookup O(E)", "sort edges by weight"],
+      },
+      {
+        title: "When to use",
+        items: ["MST algorithms", "edge-centric processing", "streaming edges"],
+      },
+      {
+        title: "Pitfalls",
+        items: ["slow edge lookup", "neighbor iteration requires scans"],
+      },
+    ],
+    complexity: { time: "Edge lookup O(E), append O(1)", space: "O(E)" },
+    operations: {
+      read: { label: "O(E)", rank: 4, note: "scan" },
+      write: { label: "O(1)", rank: 1, note: "append" },
+      search: { label: "O(E)", rank: 4, note: "edge lookup" },
+    },
+    pythonCode: edgeListCode,
+    exampleProblems: ["Kruskal MST", "Edge Sorting", "Streamed Graphs"],
   },
 ];
 
@@ -2202,6 +2858,59 @@ const renderMeta = (complexity) => `
   </div>
 `;
 
+const clampOpRank = (rank) => {
+  const value = Number(rank);
+  if (!Number.isFinite(value)) {
+    return 1;
+  }
+  return Math.max(1, Math.min(5, value));
+};
+
+const renderOperationRow = (label, metric) => {
+  if (!metric) {
+    return "";
+  }
+  const noteHtml = metric.note ? `<span class="op-note">${escapeHtml(metric.note)}</span>` : "";
+  const rank = clampOpRank(metric.rank);
+  return `
+    <div class="op-row" style="--rank:${rank};">
+      <div class="op-label">
+        <span class="op-name">${escapeHtml(label)}</span>
+        ${noteHtml}
+      </div>
+      <div class="op-bar">
+        <span class="op-fill"></span>
+      </div>
+      <div class="op-value">${escapeHtml(metric.label)}</div>
+    </div>
+  `;
+};
+
+const renderOperationsPanel = (operations) => {
+  if (!operations) {
+    return "";
+  }
+  const rows = [
+    renderOperationRow("Read", operations.read),
+    renderOperationRow("Write", operations.write),
+    renderOperationRow("Search", operations.search),
+  ]
+    .filter(Boolean)
+    .join("");
+  if (!rows) {
+    return "";
+  }
+  return `
+    <div class="op-chart">
+      <div class="op-chart-header">
+        <h5 class="op-chart-title">Operation timing</h5>
+        <p class="op-chart-note">Longer bars mean slower time complexity.</p>
+      </div>
+      <div class="op-chart-rows">${rows}</div>
+    </div>
+  `;
+};
+
 const renderCodeBlock = (code) => `
   <details class="code-block">
     <summary>Python sketch</summary>
@@ -2480,6 +3189,7 @@ const renderFoundationDetail = (item) => {
   const codeHtml = item.pythonCode ? renderCodeBlock(item.pythonCode) : "";
   const examplesHtml = item.exampleProblems?.length ? renderExamples(item.exampleProblems) : "";
   const simulationHtml = item.kind === "algorithm" ? renderSimulationPanel(item) : "";
+  const operationsHtml = item.kind === "data-structure" ? renderOperationsPanel(item.operations) : "";
 
   return `
     <div class="side-panel-header">
@@ -2490,6 +3200,7 @@ const renderFoundationDetail = (item) => {
     ${simulationHtml}
     <div class="side-panel-body">
       <p>${escapeHtml(item.description)}</p>
+      ${operationsHtml}
       ${sectionsHtml}
       ${renderMeta(item.complexity)}
       ${codeHtml}
@@ -4406,6 +5117,19 @@ const buildSearchText = (item) => {
   }
   if (item.complexity) {
     parts.push(item.complexity.time, item.complexity.space);
+  }
+  if (item.operations) {
+    Object.values(item.operations).forEach((metric) => {
+      if (!metric) {
+        return;
+      }
+      if (metric.label) {
+        parts.push(metric.label);
+      }
+      if (metric.note) {
+        parts.push(metric.note);
+      }
+    });
   }
   return parts.join(" ").toLowerCase();
 };
